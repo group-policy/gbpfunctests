@@ -88,11 +88,8 @@ class Gbp_Config(object):
         cmd_out = getoutput(cmd)
         _log.info(cmd_out)
         # Catch for non-exception error strings, even though try clause succeded
-        for err in self.err_strings:
-	    if re.search(r'\b%s\b' %(err), cmd_out, re.I):
-               _log.info(cmd_out)
-	       _log.info( "Cmd execution failed! with this Return Error: \n%s" %(cmd_out))
-	       return 0
+        if self.cmd_error_check(cmd_out) == 0:
+           return 0
         # If "create" cmd succeeded then parse the cmd_out to extract the UUID
         if cmd_val==1:
            action_uuid = self.gbp_uuid_get(cmd_out)
@@ -126,11 +123,8 @@ class Gbp_Config(object):
         # Execute the policy-classifier-config-cmd
         cmd_out = getoutput(cmd)
         # Catch for non-exception error strings, even though try clause succeded
-        for err in self.err_strings:
-            if re.search(r'\b%s\b' %(err), cmd_out, re.I):
-               _log.info(cmd_out)
-               _log.info( "Cmd execution failed! with this Return Error: \n%s" %(cmd_out))
-               return 0
+        if self.cmd_error_check(cmd_out) == 0:
+           return 0
         # If try clause succeeds for "create" cmd then parse the cmd_out to extract the UUID
         if cmd_val==1:
            classifier_uuid = self.gbp_uuid_get(cmd_out)
@@ -175,10 +169,8 @@ class Gbp_Config(object):
         cmd_out = getoutput(cmd)
         #_log.info(cmd_out)
         # Catch for non-exception error strings, even though try clause succeded
-        for err in self.err_strings:
-            if re.search(r'\b%s\b' %(err), cmd_out, re.I):
-               _log.info( "Cmd execution failed! with this Return Error: \n%s" %(cmd_out))
-               return 0
+        if self.cmd_error_check(cmd_out) == 0:
+           return 0
         # If try clause succeeds for "create" cmd then parse the cmd_out to extract the UUID of the object
         try:
 	 if cmd_val==1 and cfgobj=="group":
@@ -203,7 +195,7 @@ class Gbp_Config(object):
            return obj_uuid.rstrip()
         except Exception as e:
            exc_type, exc_value, exc_traceback = sys.exc_info()
-           _log.info('Exception Type = %s, Exception Object = %s' %(exc_type,exc_obj))
+           _log.info('Exception Type = %s, Exception Object = %s' %(exc_type,exc_value))
            return 0
         return 1
 
@@ -239,11 +231,8 @@ class Gbp_Config(object):
         cmd_out = getoutput(cmd)
         #_log.info(cmd_out)
         # Catch for non-exception error strings, even though try clause succeded
-        for err in self.err_strings:
-            if re.search(r'\b%s\b' %(err), cmd_out, re.I):
-               _log.info(cmd_out)
-               _log.info( "Cmd execution failed! with this Return Error: \n%s" %(cmd_out))
-               return 0
+        if self.cmd_error_check(cmd_out) == 0:
+           return 0
         return 1
 
 
@@ -307,24 +296,20 @@ class Gbp_Config(object):
         cmd_out = getoutput(cmd)
         #_log.info(cmd_out)
         # Catch for non-exception error strings, even though try clause succeded
-        for err in self.err_strings:
-            if re.search(r'\b%s\b' %(err), cmd_out, re.I):
-               _log.info(cmd_out)
-               _log.info( "Cmd execution failed! with this Return Error: \n%s" %(cmd_out))
-               return 0
+        if self.cmd_error_check(cmd_out) == 0:
+           return 0
         if cmd_val==1:
            obj_uuid = self.gbp_uuid_get(cmd_out)
            return obj_uuid
 
 
-    def cmd_error_check(self,cmd_output):
+    def cmd_error_check(self,cmd_out):
         """
         Verifies whether executed cmd has any known error string
         """
         for err in self.err_strings:
             if re.search('\\b%s\\b' %(err), cmd_out, re.I):
                _log.info(cmd_out)
-               _log.info("Cmd execution failed! with this Return Error: \n%s" %(cmd_ver))
+               _log.info("Cmd execution failed! with this Return Error: \n%s" %(cmd_out))
                return 0
-
 

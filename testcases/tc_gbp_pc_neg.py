@@ -156,7 +156,7 @@ class test_gbp_pc_neg(object):
             self._log.info("\n## Step 1: Create Classifier == Failed")
             return 0
         self._log.info("\n## Step 2: Update Policy Classifier with Invalid Protocol##\n")
-        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',self.cls_uuid,name='noiro_pc',protocol='http') != 0:
+        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',self.cls_uuid,name='grppol_pc',protocol='http') != 0:
            self._log.info("\n## Step 2: Updating Policy Classifier's with Invalid Protocol did NOT Fail ")
            return 0
         if self.gbpverify.gbp_classif_verify(1,self.cls_name,id=self.cls_uuid,protocol='tcp')==0:
@@ -176,7 +176,7 @@ class test_gbp_pc_neg(object):
 
         ###### Testcase work-flow starts
         self._log.info("\n## Step 2: Update Policy Classifier with Invalid Port-Range##\n")
-        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',self.cls_uuid,name='noiro_pc',port_range='4000:80') != 0:
+        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',self.cls_uuid,name='grppol_pc',port_range='4000:80') != 0:
            self._log.info("\n## Step 2: Updating Policy Classifier's with Invalid Port-Range did NOT Fail ")
            return 0
         if self.gbpverify.gbp_classif_verify(1,self.cls_name,id=self.cls_uuid,protocol='tcp',port_range='4000:80')!=0:

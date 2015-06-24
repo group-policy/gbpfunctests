@@ -117,7 +117,7 @@ class test_gbp_pa_neg(object):
         if act_uuid == 0:
            self._log.info("## Step 1: Create Action == Failed")
            return 0
-        if self.gbpcfg.gbp_action_config(2,act_uuid,name='noiro_act',action_type='redirect') != 0:
+        if self.gbpcfg.gbp_action_config(2,act_uuid,name='grppol_act',action_type='redirect') != 0:
            self._log.info("\n##Step 2: Updating Policy Action's Attrs name & action_type did NOT Fail")
            return 0
         if self.gbpverify.gbp_action_verify(1,self.act_name,id=act_uuid,action_type='allow',shared='False') == 0:
@@ -139,7 +139,7 @@ class test_gbp_pa_neg(object):
         if act_uuid == 0:
            self._log.info("## Step 1: Create Action == Failed")
            return 0
-        if self.gbpcfg.gbp_action_config(2,act_uuid,name='noiro_act',action_value='INVALID') != 0:
+        if self.gbpcfg.gbp_action_config(2,act_uuid,name='grppol_act',action_value='INVALID') != 0:
            self._log.info("\n##Step 2: Updating Policy Action's Attrs name & action_type did NOT Fail")
            return 0
         if self.gbpverify.gbp_action_verify(1,'new_act',id=act_uuid,action_type='redirect',shared='False') == 0:
@@ -156,7 +156,7 @@ class test_gbp_pa_neg(object):
                        "TEST_STEPS::\n"
                        "Delete non-existent Policy Action\n"
                        "###################################################\n")
-        if self.gbpcfg.gbp_action_config(0,'noiro_act') != 0:
+        if self.gbpcfg.gbp_action_config(0,'grppol_act') != 0:
            self._log.info("\n## Step 1: Expected Error during deletion on non-existent Policy Action == Failed")
            return 0
         self._log.info("\n## TESTCASE_GBP_PA_NEG_6: PASSED")

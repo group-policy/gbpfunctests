@@ -165,25 +165,25 @@ class test_gbp_pr_func(object):
             self._log.info("# Step 1: Create Rule == Failed")
             return 0
         self._log.info('\n## Step 1A: Create new PA and new PC##\n')
-        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','noiro_pc1')
+        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc1')
         if new_cls_uuid == 0:
           self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PR_FUNC_3 ABORTED\n")
           return 0
-        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','noiro_pa1')
+        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa1')
         if new_act_uuid == 0:
           self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PR_FUNC_3 ABORTED\n")
           return 0
 
-        attrib_list = [{'name':'noiro_pr'},{'classifier':'noiro_pc1'},{'action':'noiro_pa1'},{'description':"'For devstack demo'"}]
+        attrib_list = [{'name':'grppol_pr'},{'classifier':'grppol_pc1'},{'action':'grppol_pa1'},{'description':"'For devstack demo'"}]
         for attr_val in attrib_list:
           if self.gbpcfg.gbp_policy_cfg_upd_all('rule',rule_uuid,attr_val) ==0:
              self._log.info("\nStep 2: Updating Policy Rule's Attribute %s, Failed" %(attr_val))
              return 0
         ## Verify starts
-        if self.gbpverify.gbp_policy_verify_all(0,'rule','noiro_pr',rule_uuid,'True')==0:
+        if self.gbpverify.gbp_policy_verify_all(0,'rule','grppol_pr',rule_uuid,'True')==0:
              self._log.info("# Step 2A: Verify Policy Rule Updated Attributes using -list option == Failed")
              return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'rule',rule_uuid,name='noiro_pr',policy_classifier_id=new_cls_uuid,\
+        if self.gbpverify.gbp_policy_verify_all(1,'rule',rule_uuid,name='grppol_pr',policy_classifier_id=new_cls_uuid,\
                                              policy_actions=new_act_uuid,description='For devstack demo')==0:
              self._log.info("# Step 2B: Verify Policy Rule Updated Attributes using -show option == Failed")
              return 0
@@ -211,11 +211,11 @@ class test_gbp_pr_func(object):
             self._log.info("# Step 1: Create Rule == Failed")
             return 0
         self._log.info('\n## Step 1A: Create new PA and new PC##\n')
-        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','noiro_pc2')
+        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc2')
         if new_cls_uuid == 0:
           self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PR_FUNC_3 ABORTED\n")
           os._exit(1)
-        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','noiro_pa2')
+        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa2')
         if new_act_uuid == 0:
           self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PR_FUNC_3 ABORTED\n")
           os._exit(1)
@@ -223,17 +223,17 @@ class test_gbp_pr_func(object):
                        '## Step 2: Update Policy Rule Attributes ##\n'
                        '## protocol, port-range,name,direction,description ##\n'
                        '#################################################\n')
-        if self.gbpcfg.gbp_policy_cfg_all(2,'rule',rule_uuid,name='noiro_pr',classifier=new_cls_uuid,\
+        if self.gbpcfg.gbp_policy_cfg_all(2,'rule',rule_uuid,name='grppol_pr',classifier=new_cls_uuid,\
                                           action=new_act_uuid,description="'For devstack demo'"):
            self._log.info("\nStep 2: Updating Policy Rule's Attributes name,protocol,port-range,name,direction,description, Passed")
         else:
            self._log.info("\nStep 2: Updating Policy Rule's Attributes name,protocol,port-range,name,direction,description, Failed")    
            return 0
         ## Verify starts
-        if self.gbpverify.gbp_policy_verify_all(0,'rule','noiro_pr',rule_uuid,'True')==0:
+        if self.gbpverify.gbp_policy_verify_all(0,'rule','grppol_pr',rule_uuid,'True')==0:
              self._log.info("# Step 2A: Verify Policy Rule Updated Attributes using -list option == Failed")
              return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'rule',rule_uuid,name='noiro_pr',policy_classifier_id=new_cls_uuid,\
+        if self.gbpverify.gbp_policy_verify_all(1,'rule',rule_uuid,name='grppol_pr',policy_classifier_id=new_cls_uuid,\
                                              policy_actions=new_act_uuid,description='For devstack demo')==0:
              self._log.info("# Step 2B: Verify Policy Rule Updated Attributes using -show option == Failed")
              return 0
@@ -255,41 +255,41 @@ class test_gbp_pr_func(object):
 
         ###### Testcase work-flow starts
         self._log.info('\n## Step 1: Create new PA ,new PC, 1 PR using the same PA & PC##\n')
-        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','noiro_pc1')
+        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc1')
         if new_cls_uuid == 0:
           self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PS_FUNC_4 ABORTED\n")
           return 0
-        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','noiro_pa1')
+        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa1')
         if new_act_uuid == 0:
           self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PR_FUNC_4 ABORTED\n")
           return 0
-        rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','noiro_pr',classifier=new_cls_uuid,\
+        rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr',classifier=new_cls_uuid,\
                                           action=new_act_uuid,description="'For devstack demo'")
         if rule_uuid == 0:
                self._log.info("##\n Step 1B: Policy Rule create, failed\n")
                return 0
         self._log.info("\n## Step 2: Create Multiple PRS referencing the same PR")
         for n in range(1,11):
-          if self.gbpcfg.gbp_policy_cfg_all(1,'ruleset','noiro_prs_%s' %(n),\
+          if self.gbpcfg.gbp_policy_cfg_all(1,'ruleset','grppol_prs_%s' %(n),\
                                          policy_rule=rule_uuid,description="'For devstack demo'") == 0:
              self._log.info("##\n Step 2A: Policy Rule-Set creation referencing same Policy Rule, Failed")
              return 0
-          if self.gbpverify.gbp_policy_verify_all(1,'ruleset','noiro_prs_%s' %(n),policy_rules=rule_uuid) == 0:
-             self._log.info("##\n Step 2B: Verify Policy Rule-Set noiro_prs_%s referencing same Policy Rule, Failed" %(n))
+          if self.gbpverify.gbp_policy_verify_all(1,'ruleset','grppol_prs_%s' %(n),policy_rules=rule_uuid) == 0:
+             self._log.info("##\n Step 2B: Verify Policy Rule-Set grppol_prs_%s referencing same Policy Rule, Failed" %(n))
              return 0
         self._log.info("\n## Step 3: Delete Policy Rule and Policy Rule-Set and verify deletion fails ##")
         for i in range(1,11):
           if self.gbpcfg.gbp_policy_cfg_all(0,'rule',rule_uuid) != 0:
              self._log.info("\n## Step 3A: Referenced Policy Rule's deletion DID NOT fail ##")
              return 0
-          if self.gbpcfg.gbp_policy_cfg_all(0,'ruleset','noiro_prs_%s' %(i)) == 0:
+          if self.gbpcfg.gbp_policy_cfg_all(0,'ruleset','grppol_prs_%s' %(i)) == 0:
              self._log.info("\n## Step 3B: Referencing Policy Rule-Set's deletion, Failed ##")
              return 0
         self._log.info("\n## Step 4: Deletion of Policy Rule, all referencing Policy Rule-Sets has been deleted ##")
         if self.gbpcfg.gbp_policy_cfg_all(0,'rule',rule_uuid) == 0:
            self._log.info("\n## Step 4A: Policy Rule's deletion, Failed ##")
            return 0
-        if self.gbpverify.gbp_action_verify(1,'noiro_pr',id=rule_uuid) !=0:
+        if self.gbpverify.gbp_action_verify(1,'grppol_pr',id=rule_uuid) !=0:
             self._log.info("\n## Step 4B: Verify Policy Rule is Deleted, Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PR_FUNC_5: PASSED")

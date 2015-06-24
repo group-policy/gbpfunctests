@@ -4,6 +4,7 @@ import sys
 import logging
 import os
 import datetime
+from commands import *
 
 from libs.config_libs import *
 from libs.verify_libs import *
@@ -13,12 +14,16 @@ def main():
 
     #Run the Testcases:
     test = test_gbp_ptg_func()
+    test.global_cfg()
     if test.test_gbp_ptg_func_1()==0:
        test.cleanup(tc_name='TESTCASE_GBP_PTG_FUNC_1') 
+       test.global_cfg() # Making global_cfg available for the subsequent TC
     if test.test_gbp_ptg_func_2()==0:
        test.cleanup(tc_name='TESTCASE_GBP_PTG_FUNC_2')
-    #if test.test_gbp_ptg_func_3()==0:
-    #   test.cleanup(tc_name='TESTCASE_GBP_PTG_FUNC_3')
+       test.global_cfg()
+    if test.test_gbp_ptg_func_3()==0:
+       test.cleanup(tc_name='TESTCASE_GBP_PTG_FUNC_3')
+    #   test.global_cfg()
     #if test.test_gbp_ptg_func_4()==0:
     #   test.cleanup(tc_name='TESTCASE_GBP_PTG_FUNC_4')
     test.cleanup()
@@ -51,6 +56,10 @@ class test_gbp_ptg_func(object):
         self.ptg_name = 'demo_ptg'
         self.l2p_name = 'test_ptg_l2p'
         self.l3p_name = 'test_ptg_l3p'
+        self.pt_name = 'test_pt'
+
+    
+    def global_cfg(self):
         self._log.info('\n## Step 1: Create a PC needed for PTG Testing ##')
         self.cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier',self.cls_name)
         if self.cls_uuid == 0:
@@ -76,10 +85,11 @@ class test_gbp_ptg_func(object):
            self._log.info("\n## Reqd L3Policy Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n")
            return 0
         l2p_uuid= self.gbpcfg.gbp_policy_cfg_all(1,'l2p',self.l2p_name,l3_policy=l3p_uuid)
+
     def cleanup(self,tc_name=''):
         if tc_name !='':
            self._log.info('Testcase %s: FAILED' %(tc_name))
-        for obj in ['group','l2p','l3p','ruleset','rule','classifier','action']:
+        for obj in ['target','group','l2p','l3p','ruleset','rule','classifier','action']:
             self.gbpcfg.gbp_del_all_anyobj(obj)
 
     def test_gbp_ptg_func_1(self,name_uuid='',ptg_uuid='',rep_cr=0,rep_del=0):
@@ -220,18 +230,18 @@ class test_gbp_ptg_func(object):
     def test_gbp_ptg_func_3(self):
 
         self._log.info("\n###############################################################\n"
-                         "TESTCASE_GBP_PTG_FUNC_3: TO UPDATE/VERIFY/DELETE/VERIFY EACH ATTRIB of a POLICY TARGET-GROUP\n"
+                         "TESTCASE_GBP_PTG_FUNC_3: TO UPDATE A POLICY TARGET-GROUP AFTER DELETING PT's NEUTRON PORT \n" 
                          "TEST_STEPS::\n"
-                         "Create Policy Target-Group using ProvPRS,ConsPRS & L2P\n"
-                         "Update Each the Policy Target-Group's editable params\n"
-                         "Verify the Policy Target-Group's attributes & values, show & list cmds\n"
-                         "Delete the Policy Target-Group\n"
-                         "Verify Policy Target-Group successfully deleted\n"
+                         "Create Policy Target-Group using L2P and NO PRS\n"
+                         "Create a Policy Target using the above Policy-Target-Group\n"
+                         "Delete the neutron port corresponding to the Policy-Target\n"
+                         "Update the Policy-Target-Group with a PRS\n"
+                         "Verify Policy Target-Group successfully updated\n"
                          "###############################################################\n")
 
         ###### Testcase work-flow starts
-        self._log.info('\n## Step 1: Create Policy Target-Group with PRS,L2P ##\n')
-        uuids = self.gbpcfg.gbp_policy_cfg_all(1,'group',self.ptg_name,consumed_policy_rule_sets='%s=scope' %(self.prs_name),provided_policy_rule_sets='%s=scope' %(self.prs_name),l2_policy=self.l2p_name)
+        self._log.info('\n## Step 1: Create Policy Target-Group with L2P ##\n')
+        uuids = self.gbpcfg.gbp_policy_cfg_all(1,'group',self.ptg_name,l2_policy=self.l2p_name)
         if uuids != 0:
             ptg_uuid = uuids[0]
             l2pid = uuids[1]
@@ -239,7 +249,31 @@ class test_gbp_ptg_func(object):
         else:
             self._log.info("\n## Step 1: Create Target-Group == Failed")
             return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group','ptg_new',id=ptg_uuid,shared='False',subnets=subnetid,consumed_policy_rule_sets=self.prs_uuid,provided_policy_rule_sets=self.prs_uuid) == 0:
+        self._log.info('\n## Step 2: Create a Policy Target using the above Policy-Target-Group\n')
+        uuids =  self.gbpcfg.gbp_policy_cfg_all(1,'target',self.pt_name,policy_target_group=ptg_uuid)
+        if uuids != 0:
+           pt_uuid = uuids[0]
+           neutron_port_id = uuids[1]
+        else:
+           self._log.info("\n## Step 2: Create Policy Target == Failed")
+           return 0
+        self._log.info('\n## Step 2A: Verify the Implicit creation of Neutron Port\n')
+        if self.gbpverify.neut_ver_all('port',neutron_port_id)==0:
+           self._log.info("\n## Step 2A: Implicit creation neutron port-object == Failed")
+           return 0
+        self._log.info('\n## Step 3: Delete the neutron port corresponding to the Policy-Target\n')
+        cmd = 'neutron port-delete %s' %(neutron_port_id)
+        if self.gbpcfg.cmd_error_check(getoutput(cmd)) == 0:
+           self._log.info("\n## Step 3: Deletion of the neutron port corresponding to the Policy-Target = Failed")
+           return 0
+        self._log.info('\n## Step 4: Update the Policy-Target-Group with a PRS\n')
+        if self.gbpcfg.gbp_policy_cfg_all(2,'group',ptg_uuid,provided_policy_rule_sets='%s=scope' %(self.prs_uuid),\
+                                          consumed_policy_rule_sets='%s=scope' %(self.prs_uuid)) == 0:
+           self._log.info("\n## Step 4: Updating Policy Target-Group with new PRS == Failed")
+           return 0
+        self._log.info('\n## Step 5: Verify Policy Target-Group successfully updated\n')
+        if self.gbpverify.gbp_policy_verify_all(1,'group','ptg_new',id=ptg_uuid,shared='False',policy_targets=pt_uuid,\
+                                                consumed_policy_rule_sets=self.prs_uuid,provided_policy_rule_sets=self.prs_uuid) == 0:
            self._log.info("\n## Step 5A: Verify after updating Policy Target-Group == Failed")
            return 0
         return 1
@@ -260,44 +294,44 @@ class test_gbp_ptg_func(object):
 
         ###### Testcase work-flow starts
         self._log.info('\n## Step 1A: Create new PA ,new PC, 5 PRs using the same PA & PC##\n')
-        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','noiro_pc1')
+        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc1')
         if new_cls_uuid == 0:
           self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PTG_FUNC_4 ABORTED\n")
           return 0
-        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','noiro_pa1')
+        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa1')
         if new_act_uuid == 0:
           self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PTG_FUNC_4 ABORTED\n")
           return 0
         rule_uuid_list=[]
         for i in range(3):
-            new_rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','noiro_pr_%s' %(i),classifier=new_cls_uuid,\
+            new_rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr_%s' %(i),classifier=new_cls_uuid,\
                                           action=new_act_uuid,description="'For devstack demo'")
             if new_rule_uuid == 0:
                self._log.info("\nNew Rule Create Failed, hence TESTCASE_GBP_PTG_FUNC_4 ABORTED\n")
                return 0
             rule_uuid_list.append(new_rule_uuid)
-        ptg_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'group','noiro_ptg_many',\
+        ptg_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'ruleset','grppol_prs_many',\
                                          policy_rule='"%s %s %s"' %(rule_uuid_list[0],rule_uuid_list[1],rule_uuid_list[2]),\
                                          description="'For devstack demo'")
         if ptg_uuid == 0:
            self._log.info("\nStep 2: Updating Policy Target-Group's Attributes , Failed" )
            return 0
         ## Verify starts
-        if self.gbpverify.gbp_policy_verify_all(0,'group','noiro_ptg_many',ptg_uuid)==0:
+        if self.gbpverify.gbp_policy_verify_all(0,'group','grppol_ptg_many',ptg_uuid)==0:
            self._log.info("# Step 2A: Verify Policy Target-Group Updated Attributes using -list option == Failed")
            return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group',ptg_uuid,name='noiro_ptg_many',\
+        if self.gbpverify.gbp_policy_verify_all(1,'group',ptg_uuid,name='grppol_ptg_many',\
                                                 description='For devstack demo')==0:
            self._log.info("# Step 2B: Verify Policy Target-Group Updated Attributes using -show option == Failed")
            return 0        
-        if self.gbpverify.gbp_obj_ver_attr_all_values('group','noiro_ptg_many','policy_rules',rule_uuid_list) ==0:
+        if self.gbpverify.gbp_obj_ver_attr_all_values('group','grppol_ptg_many','policy_rules',rule_uuid_list) ==0:
            self._log.info("# Step 2C: Verify Policy Target-Group and its Multiple PRs using -show option == Failed")
            return 0
         ## Update the PRS by updating the PRs(removing few existing ones)
-        if self.gbpcfg.gbp_policy_cfg_all(2,'group','noiro_ptg_many',\
+        if self.gbpcfg.gbp_policy_cfg_all(2,'group','grppol_ptg_many',\
                                           policy_rule='"%s %s"' %(rule_uuid_list[0],rule_uuid_list[2])) == 0:
            self._log.info("# Step 3: Updating Policy Target-Group's Attributes , Failed" )
-        if self.gbpverify.gbp_obj_ver_attr_all_values('group','noiro_ptg_many','policy_rules',rule_uuid_list)!=0:
+        if self.gbpverify.gbp_obj_ver_attr_all_values('group','grppol_ptg_many','policy_rules',rule_uuid_list)!=0:
            self._log.info("# Step 3A: Verify Policy Target-Group and its Multiple PRs using -show option == Failed")
            return 0
         return 1

@@ -137,14 +137,14 @@ class test_gbp_pa_func(object):
         cmd_out=getoutput(spec_cr_cmd)
         spec_id = re.search("\\bid\\b\s+\| (.*) \|",cmd_out,re.I).group(1)
         self._log.info('\n##Step 2: Update Policy Action Attributes name and action_value##\n')
-        if self.gbpcfg.gbp_action_config(2,act_uuid,name='noiro_act',action_value=spec_id) == 0:
+        if self.gbpcfg.gbp_action_config(2,act_uuid,name='grppol_act',action_value=spec_id) == 0:
            self._log.info("\n##Step 2: Updating Policy Action's Attributes name & action_value, Failed")    
            return 0
         
-        if self.gbpverify.gbp_action_verify(0,'noiro_act',act_uuid,spec_id) == 0:
+        if self.gbpverify.gbp_action_verify(0,'grppol_act',act_uuid,spec_id) == 0:
             self._log.info("\n## Step 2A: Verify Policy Action Updated Attributes using -list option == Failed")
             return 0
-        if self.gbpverify.gbp_action_verify(1,'noiro_act',id=act_uuid,action_type='allow',shared='False',action_value=spec_id) == 0:
+        if self.gbpverify.gbp_action_verify(1,'grppol_act',id=act_uuid,action_type='allow',shared='False',action_value=spec_id) == 0:
             self._log.info("\n## Step 2B: Verify Policy Action Updated Attributes using -show option == Failed")
             return 0
         if self.gbpcfg.gbp_action_config(0,act_uuid) == 0:
@@ -153,7 +153,7 @@ class test_gbp_pa_func(object):
         self._log.info("\n## Step 3A: Now delete the service chain spec")
         spec_del_cmd='gbp servicechain-spec-delete %s' %(spec_id)
         cmd_out=getoutput(spec_del_cmd)
-        if self.gbpverify.gbp_action_verify(1,'noiro_act',id=act_uuid,action_type='allow',shared='False') != 0:
+        if self.gbpverify.gbp_action_verify(1,'grppol_act',id=act_uuid,action_type='allow',shared='False') != 0:
             self._log.info("\n## Step 3B: Verify Action is Deleted using -show option == Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PA_FUNC_2: PASSED") 

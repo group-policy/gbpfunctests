@@ -172,28 +172,28 @@ class test_gbp_prs_func(object):
             self._log.info("# Step 1: Create RuleSet == Failed")
             return 0
         self._log.info('\n## Step 1A: Create new PA ,new PC, new PR##\n')
-        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','noiro_pc1')
+        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc1')
         if new_cls_uuid == 0:
           self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PRS_FUNC_3 ABORTED\n")
           return 0
-        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','noiro_pa1')
+        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa1')
         if new_act_uuid == 0:
           self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PRS_FUNC_3 ABORTED\n")
           return 0
-        new_rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','noiro_pr',classifier=new_cls_uuid,\
+        new_rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr',classifier=new_cls_uuid,\
                                           action=new_act_uuid,description="'For devstack demo'")
         if new_rule_uuid == 0:
           self._log.info("\nNew Rule Create Failed, hence TESTCASE_GBP_PRS_FUNC_3 ABORTED\n")
           return 0
-        if self.gbpcfg.gbp_policy_cfg_all(2,'ruleset',ruleset_uuid,name='noiro_prs',\
+        if self.gbpcfg.gbp_policy_cfg_all(2,'ruleset',ruleset_uuid,name='grppol_prs',\
                                          policy_rule=new_rule_uuid,description="'For devstack demo'") ==0:
              self._log.info("\nStep 2: Updating Policy RuleSet's Attributes , Failed" )
              return 0
         ## Verify starts
-        if self.gbpverify.gbp_policy_verify_all(0,'ruleset','noiro_prs',ruleset_uuid)==0:
+        if self.gbpverify.gbp_policy_verify_all(0,'ruleset','grppol_prs',ruleset_uuid)==0:
              self._log.info("# Step 2A: Verify Policy RuleSet Updated Attributes using -list option == Failed")
              return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'ruleset',ruleset_uuid,name='noiro_prs',\
+        if self.gbpverify.gbp_policy_verify_all(1,'ruleset',ruleset_uuid,name='grppol_prs',\
                                                 policy_rules=new_rule_uuid,description='For devstack demo')==0:
              self._log.info("# Step 2B: Verify Policy RuleSet Updated Attributes using -show option == Failed")
              return 0
@@ -217,53 +217,53 @@ class test_gbp_prs_func(object):
 
         ###### Testcase work-flow starts
         self._log.info('\n## Step 1A: Create new PA ,new PC, 4 PRs using the same PA & PC##\n')
-        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','noiro_pc1')
+        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc1')
         if new_cls_uuid == 0:
           self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PRS_FUNC_4 ABORTED\n")
           return 0
-        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','noiro_pa1')
+        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa1')
         if new_act_uuid == 0:
           self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PRS_FUNC_4 ABORTED\n")
           return 0
         rule_uuid_list=[]
         for i in range(4):
-            new_rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','noiro_pr_%s' %(i),classifier=new_cls_uuid,\
+            new_rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr_%s' %(i),classifier=new_cls_uuid,\
                                           action=new_act_uuid,description="'For devstack demo'")
             if new_rule_uuid == 0:
                self._log.info("\nNew Rule Create Failed, hence TESTCASE_GBP_PRS_FUNC_4 ABORTED\n")
                return 0
             rule_uuid_list.append(new_rule_uuid)
-        ruleset_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'ruleset','noiro_prs_many',\
+        ruleset_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'ruleset','grppol_prs_many',\
                                          policy_rule='"%s %s %s %s"' %(rule_uuid_list[0],rule_uuid_list[1],rule_uuid_list[2],rule_uuid_list[3]),\
                                          description="'For devstack demo'")
         if ruleset_uuid == 0:
            self._log.info("\nStep 2: Updating Policy RuleSet's Attributes , Failed" )
            return 0
         ## Verify starts
-        if self.gbpverify.gbp_policy_verify_all(0,'ruleset','noiro_prs_many',ruleset_uuid)==0:
+        if self.gbpverify.gbp_policy_verify_all(0,'ruleset','grppol_prs_many',ruleset_uuid)==0:
            self._log.info("# Step 2A: Verify Policy RuleSet Updated Attributes using -list option == Failed")
            return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'ruleset',ruleset_uuid,name='noiro_prs_many',\
+        if self.gbpverify.gbp_policy_verify_all(1,'ruleset',ruleset_uuid,name='grppol_prs_many',\
                                                 description='For devstack demo')==0:
            self._log.info("# Step 2B: Verify Policy RuleSet Updated Attributes using -show option == Failed")
            return 0        
-        if self.gbpverify.gbp_obj_ver_attr_all_values('ruleset','noiro_prs_many','policy_rules',rule_uuid_list) ==0:
+        if self.gbpverify.gbp_obj_ver_attr_all_values('ruleset','grppol_prs_many','policy_rules',rule_uuid_list) ==0:
            self._log.info("# Step 2C: Verify Policy RuleSet and its Multiple PRs using -show option == Failed")
            return 0
         ## Update and Verify the PRS by updating the PRs(removing few existing ones)
-        if self.gbpcfg.gbp_policy_cfg_all(2,'ruleset','noiro_prs_many',\
+        if self.gbpcfg.gbp_policy_cfg_all(2,'ruleset','grppol_prs_many',\
                                           policy_rule='"%s %s"' %(rule_uuid_list[0],rule_uuid_list[2])) == 0:
            self._log.info("# Step 3: Updating Policy RuleSet's Attributes , Failed" )
            return 0
-        if self.gbpverify.gbp_obj_ver_attr_all_values('ruleset','noiro_prs_many','policy_rules',rule_uuid_list)!=0:
+        if self.gbpverify.gbp_obj_ver_attr_all_values('ruleset','grppol_prs_many','policy_rules',rule_uuid_list)!=0:
            self._log.info("# Step 3A: Verify Policy RuleSet and its Multiple PRs using -show option == Failed")
            return 0
         ## Update and Verify the PRS by updating the PRs=NULL(unmapping all PRs)
-        if self.gbpcfg.gbp_policy_cfg_all(2,'ruleset','noiro_prs_many',\
+        if self.gbpcfg.gbp_policy_cfg_all(2,'ruleset','grppol_prs_many',\
                                           policy_rule='""') == 0:
            self._log.info("# Step 4: Upmapping All Policy Rule from Policy RuleSet , Failed" )
            return 0
-        if self.gbpverify.gbp_obj_ver_attr_all_values('ruleset','noiro_prs_many','policy_rules',rule_uuid_list)!=0:
+        if self.gbpverify.gbp_obj_ver_attr_all_values('ruleset','grppol_prs_many','policy_rules',rule_uuid_list)!=0:
            self._log.info("# Step 4A: Verify All Policy Rules have been Removed from Policy RuleSet using --show option == Failed")
            return 0
         self._log.info("\nTESTCASE_GBP_PRS_FUNC_4: PASSED")

@@ -138,10 +138,10 @@ class test_gbp_pc_func(object):
         else:
             self._log.info("\n## Step 1: Create Classifier == Failed")
             return 0
-        #attrib = {'name':'noiro_pc','protocol':'tcp','direction':'bi','port_range':'22:1022','description':'For devstack demo'}
+        #attrib = {'name':'grppol_pc','protocol':'tcp','direction':'bi','port_range':'22:1022','description':'For devstack demo'}
         #for attr,val in attrib.iteritems():
         self._log.info("\n## Step 2: Update Policy Classifier attributes one at a time %s ##")
-        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',cls_uuid,name='noiro_pc')==0:
+        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',cls_uuid,name='grppol_pc')==0:
              self._log.info("\n## Step 2: Updating Policy Classifier's attribute Name, Failed")
              return 0
         if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',cls_uuid,protocol='tcp')==0:
@@ -153,10 +153,10 @@ class test_gbp_pc_func(object):
         if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',cls_uuid,port_range='22:1022')==0:
              self._log.info("\n## Step 2: Updating Policy Classifier's attribute Port Range, Failed")
              return 0
-        if self.gbpverify.gbp_classif_verify(0,'noiro_pc',cls_uuid,'tcp','bi','22:1022')==0:
+        if self.gbpverify.gbp_classif_verify(0,'grppol_pc',cls_uuid,'tcp','bi','22:1022')==0:
              self._log.info("\n## Step 2A: Verify Policy Classifier Updated Attributes using -list option == Failed")
              return 0
-        if self.gbpverify.gbp_classif_verify(1,'noiro_pc',id=cls_uuid,\
+        if self.gbpverify.gbp_classif_verify(1,'grppol_pc',id=cls_uuid,\
                                              protocol='tcp',\
                                              port_range='22:1022',direction='bi')==0:
              self._log.info("\n## Step 2B: Verify Policy Classifier Updated Attributes using -show option == Failed")
@@ -166,7 +166,7 @@ class test_gbp_pc_func(object):
         else:
             self._log.info("\n## Step 3: Delete Classifier using Name == Failed")
             return 0
-        if self.gbpverify.gbp_action_verify(1,'noiro_pc',id=cls_uuid)!=0:
+        if self.gbpverify.gbp_action_verify(1,'grppol_pc',id=cls_uuid)!=0:
             self._log.info("\n## Step 3B: Verify Classifier is Deleted using -show option == Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PC_FUNC_2: PASSED")
@@ -194,24 +194,24 @@ class test_gbp_pc_func(object):
                        "## Step 2: Update Policy Classifier Attributes ##\n"
                        "## protocol, port-range,name,direction,description ##\n"
                        "#################################################\n")
-        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',cls_uuid,name='noiro_pc',protocol='tcp',direction='bi',\
+        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',cls_uuid,name='grppol_pc',protocol='tcp',direction='bi',\
                                           port_range='22:1022',description="'For devstack demo'"):
            self._log.info("\n## Step 2: Updating Policy Classifier's Attributes name,protocol,port-range,name,direction,description, Passed")
         else:
            self._log.info("\n## Step 2: Updating Policy Classifier's Attributes name,protocol,port-range,name,direction,description, Failed")    
            return 0
         
-        if self.gbpverify.gbp_classif_verify(0,'noiro_pc',cls_uuid,'tcp','22:1022','bi')==0:
+        if self.gbpverify.gbp_classif_verify(0,'grppol_pc',cls_uuid,'tcp','22:1022','bi')==0:
             self._log.info("\n## Step 2A: Verify Policy Classifier Updated Attributes using -list option == Failed")
             return 0
-        if self.gbpverify.gbp_classif_verify(1,'noiro_pc',id=cls_uuid,protocol='tcp',direction='bi',\
+        if self.gbpverify.gbp_classif_verify(1,'grppol_pc',id=cls_uuid,protocol='tcp',direction='bi',\
                                             port_range='22:1022',description='For devstack demo') == 0:
             self._log.info("\n## Step 2B: Verify Policy Classifier Updated Attributes using -show option == Failed")
             return 0
-        if self.gbpcfg.gbp_policy_cfg_all(0,'classifier','noiro_pc') ==0:
+        if self.gbpcfg.gbp_policy_cfg_all(0,'classifier','grppol_pc') ==0:
             self._log.info("\n## Step 3: Delete Classifier using Name == Failed")
             return 0
-        if self.gbpverify.gbp_action_verify(1,'noiro_pc',id=cls_uuid) !=0:
+        if self.gbpverify.gbp_action_verify(1,'grppol_pc',id=cls_uuid) !=0:
             self._log.info("\n## Step 3B: Verify Classifier is Deleted using -show option == Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PC_FUNC_3: PASSED")
@@ -240,25 +240,25 @@ class test_gbp_pc_func(object):
            return 0
         self._log.info("\n## Step 2: Create Multiple Policy Rules, each referencing the same classifier ##\n")
         for n in range(1,11):
-          if self.gbpcfg.gbp_policy_cfg_all(1,'rule','noiro_pr_%s' %(n),classifier=cls_uuid) == 0:
-             self._log.info("\n## Step 2A: Policy Rule noiro_pr_%s creation, Failed" %(n))
+          if self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr_%s' %(n),classifier=cls_uuid) == 0:
+             self._log.info("\n## Step 2A: Policy Rule grppol_pr_%s creation, Failed" %(n))
              return 0
-          if self.gbpverify.gbp_policy_verify_all(1,'rule','noiro_pr_%s' %(n),policy_classifier_id=cls_uuid)==0:
-             self._log.info("\n## Step 2B: Policy Rule noiro_pr_%s referencing same classifier, Failed ##\n" %(n))
+          if self.gbpverify.gbp_policy_verify_all(1,'rule','grppol_pr_%s' %(n),policy_classifier_id=cls_uuid)==0:
+             self._log.info("\n## Step 2B: Policy Rule grppol_pr_%s referencing same classifier, Failed ##\n" %(n))
              return 0
         self._log.info("\n## Step 3: Delete Policy Classifier and Policy Rule and verify deletion fails ##")
         for i in range(1,11):
           if self.gbpcfg.gbp_policy_cfg_all(0,'classifier',cls_uuid) != 0:
              self._log.info("\n## Step 3A: Referenced Policy Classifier's deletion DID NOT fail ##")
              return 0
-          if self.gbpcfg.gbp_policy_cfg_all(0,'rule','noiro_pr_%s' %(i)) == 0:
+          if self.gbpcfg.gbp_policy_cfg_all(0,'rule','grppol_pr_%s' %(i)) == 0:
              self._log.info("\n## Step 3B: Referencing Policy Rule's deletion, Failed ##")
              return 0
         self._log.info("\n## Step 4: Deletion of Policy Classifier, all referencing Policy Rules have been deleted ##")
         if self.gbpcfg.gbp_policy_cfg_all(0,'classifier',cls_uuid) == 0:
            self._log.info("\n## Step 4A: Policy Classifier's deletion, Failed ##")
            return 0
-        if self.gbpverify.gbp_action_verify(1,'noiro_pc',id=cls_uuid) !=0:
+        if self.gbpverify.gbp_action_verify(1,'grppol_pc',id=cls_uuid) !=0:
             self._log.info("\n## Step 4B: Verify Classifier is Deleted, Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PC_FUNC_4: PASSED")
