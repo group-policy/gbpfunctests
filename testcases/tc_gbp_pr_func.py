@@ -85,7 +85,7 @@ class test_gbp_pr_func(object):
         ###### Testcase work-flow starts 
         if rep_cr == 0 or rep_cr == 1:
 	 self._log.info('\n## Step 1: Create Rule with default attrib vals##\n')
-         rule_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'rule',name_uuid,classifier=self.cls_name)
+         rule_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'rule',name_uuid,classifier=self.cls_name,action=self.act_uuid)
          if rule_uuid == 0:
 	    self._log.info("# Step 1: Create Rule == Failed")
             return 0

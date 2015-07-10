@@ -18,7 +18,12 @@ def run_func_neg():
     return "func_neg.txt"
 
 def main():
-      usage = "usage: suite_run.py "
+      usage = "Usage: python suite_run.py <'aci' or 'upstream'>"
+      try:
+         flag = sys.argv[1]
+      except Exception:
+         print '%s' %(usage)
+         sys.exit(1)          
       fname = run_func_neg()
       num_lines = sum(1 for line in open(fname))
       print "\nNumber of Functional Test Scripts to execute = %s" %(num_lines)
@@ -26,7 +31,7 @@ def main():
         for i,l in enumerate(f,1):
             print "Functional Test Script to execute now == %s" %(l)
             # Assumption: test-scripts are executable from any location
-            cmd='python %s' %(l.strip()) # Reading the line from text file, also reads trailing \n, hence we need to strip
+            cmd='python %s %s' %(l.strip(),flag) # Reading the line from text file, also reads trailing \n, hence we need to strip
             print cmd
             #out=getoutput(cmd)
             subprocess.call(cmd,shell=True)

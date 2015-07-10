@@ -150,6 +150,7 @@ class test_gbp_l2p_func(object):
             self._log.info("\n## Step 2C: Verify default L3Policy == Failed")
             return 0
         ## Create Multiple PTGs and associate the above L2P
+        self._log.info("\n## Step 3: Create Multiple(n=10) PTGs using the above L2P\n")
         n,i=11,1
         ptg_list=[]
         subnet_list=[]
@@ -165,7 +166,7 @@ class test_gbp_l2p_func(object):
            if self.gbpverify.gbp_policy_verify_all(1,'group',ptg_name,id=ptg_list[i-1],shared='False',l2_policy_id=l2p_uuid) == 0:
               self._log.info("\n## Step 3A: Verify Policy Target-Group using L2P == Failed")
               return 0
-           if self.gbpverify.neut_ver_all('subnet',subnet_list[i-1],name='ptg_%s' %(ptg_name))== 0:
+           if self.gbpverify.neut_ver_all('subnet',subnet_list[i-1],network_id=net_uuid)== 0:
               self._log.info("\n## Step 3B: Verify Implicit Neutron Subnet == Failed")
               return 0
            i+=1
@@ -173,6 +174,7 @@ class test_gbp_l2p_func(object):
            self._log.info("\n## Step 3C: Verifying multiple PTGs mapped to L2P == Failed \n")
            return 0
         ## Delete all PTGs and L2P
+        self._log.info("\n## Step 4: Delete all PTGs and L2P\n")
         for ptgid in ptg_list:
             if self.gbpcfg.gbp_policy_cfg_all(0,'group',ptgid) == 0: 
                self._log.info("\n## Step 4: Delete Target-Group == Failed")
@@ -181,6 +183,7 @@ class test_gbp_l2p_func(object):
                self._log.info("\n## Step 4A: Delete L2Policy == Failed")
                return 0
         ## Verify that all Implicit Neutron Objs, Default L3p , PTGs and L2P are deleted
+        self._log.info("\n## Step 5: Verify that all Implicit Neutron Objs, Default L3p , PTGs and L2P are deleted\n")
         if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'l3p','default')!=0:
            self._log.info("\n## Step 5: Verify that default L3P has got auto-deleted == Failed\n")
            return 0 

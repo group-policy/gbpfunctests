@@ -10,7 +10,6 @@ from libs.verify_libs import *
 from libs.utils_libs import *
 
 def main():
-
     #Run the Testcases:
     test = test_gbp_prs_func()
     if test.test_gbp_prs_func_1()==0:
@@ -21,10 +20,16 @@ def main():
        test.cleanup(tc_name='TESTCASE_GBP_PRS_FUNC_3')
     if test.test_gbp_prs_func_4()==0:
        test.cleanup(tc_name='TESTCASE_GBP_PRS_FUNC_4')
-    if test.test_gbp_prs_func_5()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_PRS_FUNC_5')
-    if test.test_gbp_prs_func_6()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_PRS_FUNC_6')
+    if sys.argv[1] == 'aci':
+       test._log.info("\nTESTCASE_GBP_PRS_FUNC_5: TO CREATE/VERIFY/DELETE/VERIFY a PARENT and CHILD POLICY RULESET\n")
+       test._log.info("\nTESTCASE_GBP_PRS_FUNC_5: NOT SUPPORTED in ACI")
+       test._log.info("\nTESTCASE_GBP_PRS_FUNC_6: TO CHANGE/UPDATE/DELETE/VERIFY PARENT and CHILD POLICY RULESET\n")
+       test._log.info("\nTESTCASE_GBP_PRS_FUNC_6: NOT SUPPORTED in ACI")
+    else:
+      if test.test_gbp_prs_func_5()==0:
+         test.cleanup(tc_name='TESTCASE_GBP_PRS_FUNC_5')
+      if test.test_gbp_prs_func_6()==0:
+         test.cleanup(tc_name='TESTCASE_GBP_PRS_FUNC_6')
     test.cleanup()
     report_results('test_gbp_prs_func','test_results.txt')
     sys.exit(1)
@@ -270,17 +275,6 @@ class test_gbp_prs_func(object):
         return 1
 
     def test_gbp_prs_func_5(self):
-        """
-        Create 1 Policy RuleSet using the same PA & PC
-        Create the 2nd Policy RuleSet using the same PA, PC and associate PRS-1 as CHILD
-        Verify the Child PRS reflect the Parent PRS and viceversa
-        Delete the Child PRS
-        Verify the Parent PRS has no CHILD
-        Create the CHild PRS, associate to the Parent PRS
-        Verify the association is established b/e Child and Parent
-        Delete the Parent PRS
-        Verify the Parent PRS association removed the Child PRS
-        """
         self._log.info("\n###############################################################\n"
                        "TESTCASE_GBP_PRS_FUNC_5: TO CREATE/VERIFY/DELETE/VERIFY a PARENT and CHILD POLICY RULESET\n"
                        "TEST_STEP::\n"

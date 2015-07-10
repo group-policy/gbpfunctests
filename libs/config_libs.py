@@ -9,10 +9,6 @@ import string
 import re
 import datetime
 from commands import *
-from fabric.api import cd,run,env, hide, get, settings
-from keystoneclient import client as ksclient
-from keystoneclient import session
-from keystoneclient.auth.identity import v2 as ident
 
 # Initialize logging
 logging.basicConfig(format='%(asctime)s [%(levelname)s] %(name)s - %(message)s', level=logging.WARNING)

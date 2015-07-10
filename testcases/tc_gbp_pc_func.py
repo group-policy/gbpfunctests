@@ -48,6 +48,7 @@ class test_gbp_pc_func(object):
       self.gbpcfg = Gbp_Config()
       self.gbpverify = Gbp_Verify()
       self.cls_name = 'demo_pc'
+      self.act_name = 'demo_pa'
 
     def cleanup(self,tc_name=''):
         if tc_name !='':
@@ -166,7 +167,7 @@ class test_gbp_pc_func(object):
         else:
             self._log.info("\n## Step 3: Delete Classifier using Name == Failed")
             return 0
-        if self.gbpverify.gbp_action_verify(1,'grppol_pc',id=cls_uuid)!=0:
+        if self.gbpverify.gbp_classif_verify(1,'grppol_pc',id=cls_uuid)!=0:
             self._log.info("\n## Step 3B: Verify Classifier is Deleted using -show option == Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PC_FUNC_2: PASSED")
@@ -211,7 +212,7 @@ class test_gbp_pc_func(object):
         if self.gbpcfg.gbp_policy_cfg_all(0,'classifier','grppol_pc') ==0:
             self._log.info("\n## Step 3: Delete Classifier using Name == Failed")
             return 0
-        if self.gbpverify.gbp_action_verify(1,'grppol_pc',id=cls_uuid) !=0:
+        if self.gbpverify.gbp_classif_verify(1,'grppol_pc',id=cls_uuid) !=0:
             self._log.info("\n## Step 3B: Verify Classifier is Deleted using -show option == Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PC_FUNC_3: PASSED")
@@ -228,6 +229,11 @@ class test_gbp_pc_func(object):
                           "Verify Policy Classifier successfully deleted\n"
                           "###############################################################\n")
         ###### Testcase work-flow starts
+        self._log.info("\n## Step 0: Creating a Policy Action needed for this test\n")
+        act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action',self.act_name)
+        if act_uuid == 0:
+           self._log.info("\n## TESTCASE_GBP_PC_FUNC_4: ABORTED\n")
+           os._exit(1)
         self._log.info("\n## Step 1: Create and Verify Classifier with valued attrib ##\n")
         cls_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'classifier',self.cls_name,protocol='tcp',direction='bi',\
                                                   port_range='22:1022',description="'For devstack demo'")
@@ -240,10 +246,10 @@ class test_gbp_pc_func(object):
            return 0
         self._log.info("\n## Step 2: Create Multiple Policy Rules, each referencing the same classifier ##\n")
         for n in range(1,11):
-          if self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr_%s' %(n),classifier=cls_uuid) == 0:
+          if self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr_%s' %(n),classifier=cls_uuid,action=act_uuid) == 0:
              self._log.info("\n## Step 2A: Policy Rule grppol_pr_%s creation, Failed" %(n))
              return 0
-          if self.gbpverify.gbp_policy_verify_all(1,'rule','grppol_pr_%s' %(n),policy_classifier_id=cls_uuid)==0:
+          if self.gbpverify.gbp_policy_verify_all(1,'rule','grppol_pr_%s' %(n),policy_classifier_id=cls_uuid,policy_actions=act_uuid)==0:
              self._log.info("\n## Step 2B: Policy Rule grppol_pr_%s referencing same classifier, Failed ##\n" %(n))
              return 0
         self._log.info("\n## Step 3: Delete Policy Classifier and Policy Rule and verify deletion fails ##")
@@ -258,7 +264,7 @@ class test_gbp_pc_func(object):
         if self.gbpcfg.gbp_policy_cfg_all(0,'classifier',cls_uuid) == 0:
            self._log.info("\n## Step 4A: Policy Classifier's deletion, Failed ##")
            return 0
-        if self.gbpverify.gbp_action_verify(1,'grppol_pc',id=cls_uuid) !=0:
+        if self.gbpverify.gbp_classif_verify(1,'grppol_pc',id=cls_uuid) !=0:
             self._log.info("\n## Step 4B: Verify Classifier is Deleted, Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PC_FUNC_4: PASSED")

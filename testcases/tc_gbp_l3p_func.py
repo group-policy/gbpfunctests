@@ -16,12 +16,12 @@ def main():
     test = test_gbp_l3p_func()
     if test.test_gbp_l3p_func_1()==0:
        test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_1') 
-    if test.test_gbp_l3p_func_2()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_2')
+    #if test.test_gbp_l3p_func_2()==0:
+    #   test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_2')
     if test.test_gbp_l3p_func_3()==0:
        test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_3')
-    if test.test_gbp_l3p_func_4()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_4')
+    #if test.test_gbp_l3p_func_4()==0:
+    #   test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_4')
     test.cleanup()
     report_results('test_gbp_l3p_func','test_results.txt')
     sys.exit(1)
@@ -183,7 +183,7 @@ class test_gbp_l3p_func(object):
 
         ###### Testcase work-flow starts
         ## Create L2 L3 Policy
-        self._log.info("\n## Step 1: Create Policy L3Policy with non-default attrs and values ##")
+        self._log.info("\n## Step 1: Create L3Policy with non-default attrs and values ##")
         l3p_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'l3p',self.l3p_name,ip_pool='20.20.0.0/24',subnet_prefix_length='28')
         if l3p_uuid == 0:
            self._log.info("\n## Step 1: Create L3Policy == Failed")

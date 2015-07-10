@@ -13,7 +13,8 @@ from libs.utils_libs import *
 def main():
 
     #Run the Testcases:
-    test = test_gbp_ptg_func()
+    env_flag = sys.argv[1]
+    test = test_gbp_ptg_func(env_flag)
     test.global_cfg()
     if test.test_gbp_ptg_func_1()==0:
        test.cleanup(tc_name='TESTCASE_GBP_PTG_FUNC_1') 
@@ -23,6 +24,7 @@ def main():
        test.global_cfg()
     if test.test_gbp_ptg_func_3()==0:
        test.cleanup(tc_name='TESTCASE_GBP_PTG_FUNC_3')
+
     #   test.global_cfg()
     #if test.test_gbp_ptg_func_4()==0:
     #   test.cleanup(tc_name='TESTCASE_GBP_PTG_FUNC_4')
@@ -42,7 +44,7 @@ class test_gbp_ptg_func(object):
     _log.setLevel(logging.INFO)
     _log.setLevel(logging.DEBUG)
 
-    def __init__(self):
+    def __init__(self,env_flag):
         """
         Init def 
         """
@@ -57,7 +59,13 @@ class test_gbp_ptg_func(object):
         self.l2p_name = 'test_ptg_l2p'
         self.l3p_name = 'test_ptg_l3p'
         self.pt_name = 'test_pt'
-
+        self.env_flag = env_flag
+        if self.env_flag == 'aci':
+            self.def_ip_pool = '192.168.0.0/16'
+            self.cidr = '192.168.0.0/26'
+        else:
+            self.def_ip_pool = '10.0.0.0/8'
+            self.cidr = '10.0.0.0/26'
     
     def global_cfg(self):
         self._log.info('\n## Step 1: Create a PC needed for PTG Testing ##')
@@ -137,7 +145,7 @@ class test_gbp_ptg_func(object):
             self._log.info("\n## Step 2C: Verify By-Default L2Policy == Failed")
             return 0
          rtr_uuid=self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'l3p',l3pid,ret='default',id=l3pid,\
-                                                         name='default',ip_pool='10.0.0.0/8',\
+                                                         name='default',ip_pool=self.def_ip_pool,\
                                                          l2_policies=l2pid,subnet_prefix_length='26',\
                                                          ip_version='4')
          if rtr_uuid!=0 and isinstance(rtr_uuid,str) == 0:
@@ -148,14 +156,15 @@ class test_gbp_ptg_func(object):
             self._log.info("# Step 2E: Implicit-creation of Neutron Network-Obj -show option == Failed")
             return 0
          subnet_name='ptg_%s' %(name_uuid)
-         if self.gbpverify.neut_ver_all('subnet',subnetid,name=subnet_name,cidr='10.0.0.0/26',\
+         if self.gbpverify.neut_ver_all('subnet',subnetid,cidr=self.cidr,\
                                         enable_dhcp='True',network_id=ntkid) == 0:
             self._log.info("\n## Step 2F: Implicit-creation of Neutron SubNet-Obj == Failed")
             return 0
-         rtr_name='l3p_default'
-         if self.gbpverify.neut_ver_all('router',rtr_uuid,name=rtr_name,admin_state_up='True',status='ACTIVE') == 0:
-           self._log.info("\n## Step 2G: Implicit-creation of Neutron Router-Obj == Failed")
-           return 0
+         if self.env_flag != 'aci':
+            rtr_name='l3p_default'
+            if self.gbpverify.neut_ver_all('router',rtr_uuid,admin_state_up='True',status='ACTIVE') == 0:
+                self._log.info("\n## Step 2G: Implicit-creation of Neutron Router-Obj == Failed")
+                return 0
         ## Delete and Verify 
         if rep_del == 0 or rep_del == 1: 
          self._log.info('\n## Step 3: Delete Target-Group using name  ##\n')
