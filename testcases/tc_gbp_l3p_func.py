@@ -16,12 +16,12 @@ def main():
     test = test_gbp_l3p_func()
     if test.test_gbp_l3p_func_1()==0:
        test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_1') 
-    #if test.test_gbp_l3p_func_2()==0:
-    #   test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_2')
+    if test.test_gbp_l3p_func_2()==0:
+       test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_2')
     if test.test_gbp_l3p_func_3()==0:
        test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_3')
-    #if test.test_gbp_l3p_func_4()==0:
-    #   test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_4')
+    if test.test_gbp_l3p_func_4()==0:
+       test.cleanup(tc_name='TESTCASE_GBP_L3P_FUNC_4')
     test.cleanup()
     report_results('test_gbp_l3p_func','test_results.txt')
     sys.exit(1)
