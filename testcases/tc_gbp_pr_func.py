@@ -23,6 +23,8 @@ def main():
        test.cleanup(tc_name='TESTCASE_GBP_PR_FUNC_4')
     if test.test_gbp_pr_func_5()==0:
        test.cleanup(tc_name='TESTCASE_GBP_PR_FUNC_5')
+    if test.test_gbp_pr_func_6()==0:
+       test.cleanup(tc_name='TESTCASE_GBP_PR_FUNC_6')
     test.cleanup()
     report_results('test_gbp_pr_func','test_results.txt')
     sys.exit(1)
@@ -293,6 +295,71 @@ class test_gbp_pr_func(object):
             self._log.info("\n## Step 4B: Verify Policy Rule is Deleted, Failed")
             return 0
         self._log.info("\n## TESTCASE_GBP_PR_FUNC_5: PASSED")
+        return 1
+
+
+    def test_gbp_pr_func_6(self):
+
+        self._log.info("\n###############################################################\n"
+                          "TESTCASE_GBP_PR_FUNC_6: TO UPDATE ALL ATTRIB of a POLICY CLASSIFIER USED IN A POLICY RULE \n"
+                          "TEST_STEP::\n"
+                          "Create Policy Rule using a Policy Action and Policy Classifier\n"
+                          "Update All the in-use Policy Classifier's editable params at one shot\n"
+                          "Verify the Policy Classifier's updated attributes & values\n"
+                          "Delete the Policy Rule\n"
+                          "Rever the Policy Classifier's editable params\n"
+                          "Verify the Policy Classifier's updated attributes & values, show & list cmds\n"
+                          "###############################################################\n")
+
+        ###### Testcase work-flow starts
+        self._log.info('\n## Step 1: Create Policy Rule with PA and PC##\n')
+        self._log.info('\n## Step 1A: Create new PA and new PC##\n')
+        new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc2',protocol='tcp', port_range='100:300')
+        if new_cls_uuid == 0:
+          self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PR_FUNC_3 ABORTED\n")
+          os._exit(1)
+        new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa2')
+        if new_act_uuid == 0:
+          self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PR_FUNC_3 ABORTED\n")
+          os._exit(1)
+        rule_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'rule',self.rule_name,classifier=new_cls_uuid,action=new_act_uuid)
+        if rule_uuid != 0:
+            self._log.info("Step 1B: Create Rule Passed, UUID == %s\n" %(rule_uuid))
+        else:
+            self._log.info("# Step 1B: Create Rule == Failed")
+            return 0
+        self._log.info('\n###########################################\n'
+                       '## Step 2: Update in-use Policy Classifier editable params ##\n'
+                       '## protocol, port-range,name,direction,description ##\n'
+                       '#################################################\n')
+        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',new_cls_uuid,protocol='udp',direction='bi',\
+                                          port_range='640:1022',description="'For devstack demo'")!=0:
+           self._log.info("\nStep 2: Updating in-use Policy Classifier's Attributes protocol,port-range,direction,description, Passed")
+        else:
+           self._log.info("\nStep 2: Updating in-use Policy Classifier's Attributes protocol,port-range,direction,description, Failed")
+           return 0
+        ## Verify starts
+        self._log.info('\n## Step 3: Verify the in-use Policy Classifier updated attributes & values\n')
+        if self.gbpverify.gbp_policy_verify_all(1,'classifier',new_cls_uuid,protocol='udp',direction='bi',port_range='640:1022')==0:
+             self._log.info("# Step 3: Verify Policy CLassifier Updated Attributes using -show option == Failed")
+             return 0
+        ## Delete Policy Rule and Re-update the Policy Classifier
+        self._log.info('\n## Step 4: Delete the Policy Rule\n')
+        if self.gbpcfg.gbp_policy_cfg_all(0,'rule',rule_uuid) == 0:
+             self._log.info("\n## Step 4: Policy Rule's deletion, failed ##")
+             return 0
+        self._log.info('\n## Step 5: Update the Policy Classifier editable params\n')
+        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',new_cls_uuid,protocol='tcp',\
+                                          port_range='100:300')==0:
+           self._log.info("\nStep 5: Updating in-use Policy Classifier Attributes protocol,port_range, Failed")
+           return 0
+        ## Verify starts
+        self._log.info('\n## Step 6: Verify the in-use Policy Classifier updated attributes & values\n')
+        if self.gbpverify.gbp_policy_verify_all(1,'classifier',new_cls_uuid,protocol='tcp',direction='bi',port_range='100:300')==0:
+             self._log.info("# Step 6: Verify Policy CLassifier Updated Attributes using -show option == Failed")
+             return 0
+        self._log.info("\n## TESTCASE_GBP_PR_FUNC_6: PASSED")
+        return 1
 
 if __name__ == '__main__':
     main()
