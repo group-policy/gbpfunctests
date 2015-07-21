@@ -19,12 +19,8 @@ def main():
        test.cleanup(tc_name='TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_2')
     if test.test_gbp_pr_pc_pa_shared_func_3()==0:
        test.cleanup(tc_name='TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_3')
-    #if test.test_gbp_pr_pc_pa_shared_func_4()==0:
-    #   test.cleanup(tc_name='TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_4')
-    #if test.test_gbp_pr_pc_pa_shared_func_5()==0:
-    #   test.cleanup(tc_name='TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_5')
-    #if test.test_gbp_pr_pc_pa_shared_func_6()==0:
-    #   test.cleanup(tc_name='TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_6')
+    if test.test_gbp_pr_pc_pa_shared_func_4()==0:
+       test.cleanup(tc_name='TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_4')
     test.cleanup()
     report_results('test_gbp_pr_pc_pa_shared_func','test_results.txt')
     sys.exit(1)
@@ -246,6 +242,79 @@ class test_gbp_pr_pc_pa_shared_func(object):
            return 0
         self._log.info("\n## TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_3: PASSED")
         return 1
+
+    def test_gbp_pr_pc_pa_shared_func_4(self):
+
+        self._log.info("\n###############################################################\n"
+                       "TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_4: TO CREATE/VERIFY/UPDATE/VERIFY a POLICY ACTION & CLASSIFIER for a POLICY RULE\n"
+                       "TEST_STEP::\n"
+                       "Create Policy Action & Policy Classifier with shared=False\n"
+                       "Create Policy Rule with PA & PC and shared=True and verify creation fails\n"
+                       "Update the above Policy Action & Classifier with shared=True and verify it success\n"
+                       "Create the Policy Rule with shared=True using above PA & PC \n"
+                       "Update Policy Action and Classifier with shared=False and verify it failed to upudate\n"
+                       "###############################################################\n")
+
+        ###### Testcase work-flow starts
+        ## Create PA,PC with shared=False
+        self._log.info('\n## Step 1A: Create a PC with shared=False(default) ##')
+        obj_uuid_false = {}
+        self.cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','cls_false')
+        if self.cls_uuid == 0:
+           self._log.info("\n Creation of Policy Classifier with shared=False, Failed\n")
+           return 0
+        obj_uuid_false['classifier']=self.cls_uuid
+        self._log.info('\n## Step 1B: Create a PA with shared=False(default) ##')
+        self.act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','act_false')
+        if self.act_uuid == 0:
+           self._log.info("\n Creation of Policy Action with shared=False, Failed\n")
+           return 0
+        obj_uuid_false['action']=self.act_uuid
+        ## Create & Verify PR with shared=True and above PA & PC and create should fail
+        self._log.info("\n## Step 2B: Create Policy Rule(shared=True) with PA(shared=False) & PC(shared=True)& create fails ##")
+        if self.gbpcfg.gbp_policy_cfg_all(1,'rule','pr_true',classifier=obj_uuid_false['classifier'],action=obj_uuid_false['action'],shared=True)!=0:
+           self._log.info("# Step 2B: Creation of Policy Rule with shared=True using attributes PA+PC(shared=False) DID NOT Fail")
+           return 0
+        ## Update the Policy Action & Policy CLassifier with shared=True
+        self._log.info("\n## Step 3A: Update the Policy Action with shared=True\n")
+        if self.gbpcfg.gbp_policy_cfg_all(2,'action',self.act_uuid,shared=True) == 0:
+           self._log.info("# Step 3A: Update of Policy Action shared=True, Failed")
+           return 0
+        self._log.info("\n## Step 3B: Update the Policy Classifer with shared=True\n")
+        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',self.cls_uuid,shared=True) == 0:
+           self._log.info("# Step 3B: Update of Policy Classifier shared=True, Failed")
+           return 0
+        ## Create and verify the Policy Rule with shared=True 
+        self._log.info("\n## Step 4: Create the Policy Rule with shared=True using PA+PC(shared=True)\n")
+        rule_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'rule','pr_true',classifier=obj_uuid_false['classifier'],action=obj_uuid_false['action'],shared=True)
+        if rule_uuid == 0:
+           self._log.info("# Step 4: Create of Policy Rule shared=True, Failed")
+           return 0
+        self._log.info("\n## Step 4A: Verify the Policy Rule got updated shared=True\n")
+        if self.gbpverify.gbp_policy_verify_all(1,'rule',rule_uuid,\
+                                                policy_classifier_id=obj_uuid_false['classifier'],enabled='True',\
+                                                policy_actions=obj_uuid_false['action'],shared=True) == 0:
+           self._log.info("# Step 4A: Verify Policy Rule with shared=True, Failed")
+           return 0
+        ## Update Policy Action and Classifier with shared=False and verify it failed to upudate
+        self._log.info("\n## Step 5A: Update the Policy Action with shared=True\n")
+        if self.gbpcfg.gbp_policy_cfg_all(2,'action',self.act_uuid,shared=False) != 0:
+           self._log.info("# Step 5A: Update of Policy Action shared=Failed DID NOT Fail")
+           return 0
+        self._log.info("\n## Step 5B: Update the Policy Classifer with shared=True\n")
+        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',self.cls_uuid,shared=False) == 0:
+           self._log.info("# Step 5B: Update of Policy Classifier shared=False DID NOT Fail")
+           return 0
+        ## Verify the shared attributes of Policy Action & Classifier as True
+        if self.gbpverify.gbp_policy_verify_all(1,'action',self.act_uuid,shared='True') == 0:
+           self._log.info("# Step 6: Policy Action verify shows that shared attribute has become False")
+           return 0
+        if self.gbpverify.gbp_policy_verify_all(1,'classifier',self.cls_uuid,shared='True') == 0:
+           self._log.info("# Step 6: Policy Classifier verify shows that shared attribute become False")
+           return 0
+        self._log.info("\n## TESTCASE_GBP_PR_PC_PA_SHARED_INTEG_4: PASSED")
+        return 1
+
 
 if __name__ == '__main__':
     main()
