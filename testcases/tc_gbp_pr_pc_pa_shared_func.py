@@ -11,6 +11,7 @@ from libs.utils_libs import *
 
 def main():
     print 'For now skipping this entire suite TESTCASE_GBP_PR_PC_PA_SHARED_INTEG* ...'
+    sys.exit(1) 
     #Run the Testcases:
     test = test_gbp_pr_pc_pa_shared_func()
     if test.test_gbp_pr_pc_pa_shared_func_1()==0:

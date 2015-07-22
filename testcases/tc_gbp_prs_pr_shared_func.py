@@ -11,6 +11,7 @@ from libs.utils_libs import *
 
 def main():
     print 'For now skipping this entire suite ..'
+    sys.exit(1)
     #Run the Testcases:
     test = test_gbp_prs_pr_shared_func()
     if test.test_gbp_prs_pr_shared_func_1()==0:
