@@ -42,6 +42,10 @@ def main():
       print "\n\nTotal Number of TestCases Executed= %s" %(contents.count("TESTCASE_GBP_"))
       print "\n\nNumber of TestCases Passed= %s" %(contents.count("PASSED"))
       print "\n\nNumber of TestCases Failed= %s" %(contents.count("FAILED"))
+      if contents.count("FAILED") > 0:
+         sys.exit(1)
+      else:
+         return 0
       
 if __name__ == "__main__":
     main()
