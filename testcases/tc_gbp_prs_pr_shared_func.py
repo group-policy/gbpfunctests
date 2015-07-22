@@ -10,6 +10,7 @@ from libs.verify_libs import *
 from libs.utils_libs import *
 
 def main():
+    print 'For now skipping this entire suite ..'
     #Run the Testcases:
     test = test_gbp_prs_pr_shared_func()
     if test.test_gbp_prs_pr_shared_func_1()==0:
