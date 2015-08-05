@@ -43,7 +43,7 @@ class Gbp_Config(object):
         return creds
 
 
-    def gbp_uuid_get(self,cmd_out):
+    def get_uuid(self,cmd_out):
         '''
         Extracts UUID of a gbp object
         '''
@@ -88,7 +88,7 @@ class Gbp_Config(object):
            return 0
         # If "create" cmd succeeded then parse the cmd_out to extract the UUID
         if cmd_val==1:
-           action_uuid = self.gbp_uuid_get(cmd_out)
+           action_uuid = self.get_uuid(cmd_out)
            return action_uuid
 
 
@@ -123,7 +123,7 @@ class Gbp_Config(object):
            return 0
         # If try clause succeeds for "create" cmd then parse the cmd_out to extract the UUID
         if cmd_val==1:
-           classifier_uuid = self.gbp_uuid_get(cmd_out)
+           classifier_uuid = self.get_uuid(cmd_out)
            return classifier_uuid
 
 
@@ -138,7 +138,8 @@ class Gbp_Config(object):
         """
         cfgobj_dict={"action":"policy-action","classifier":"policy-classifier","rule":"policy-rule",
                       "ruleset":"policy-rule-set","group":"policy-target-group","target":"policy-target",
-                      "l2p":"l2policy","l3p":"l3policy","nsp":"network-service-policy"}
+                      "l2p":"l2policy","l3p":"l3policy","nsp":"network-service-policy",
+                      "extseg":"external-segment","extpol":"external-policy","natpool":"nat-pool"}
         if cfgobj != '':
            if cfgobj not in cfgobj_dict:
               raise KeyError 
@@ -170,24 +171,24 @@ class Gbp_Config(object):
         # If try clause succeeds for "create" cmd then parse the cmd_out to extract the UUID of the object
         try:
 	 if cmd_val==1 and cfgobj=="group":
-           obj_uuid = self.gbp_uuid_get(cmd_out)
+           obj_uuid = self.get_uuid(cmd_out)
            match = re.search("\\bl2_policy_id\\b\s+\| (.*) \|",cmd_out,re.I)
            l2pid = match.group(1)
            match = re.search("\\bsubnets\\b\s+\| (.*) \|",cmd_out,re.I)
            subnetid = match.group(1)
            return obj_uuid,l2pid.rstrip(),subnetid.rstrip()
          if cmd_val==1 and cfgobj=="target":
-           obj_uuid = self.gbp_uuid_get(cmd_out)
+           obj_uuid = self.get_uuid(cmd_out)
            match = re.search("\\bport_id\\b\s+\| (.*) \|",cmd_out,re.I)
            neutr_port_id = match.group(1)
            return obj_uuid.rstrip(),neutr_port_id.rstrip()
          if cmd_val==1 and cfgobj=="l2p":
-            obj_uuid = self.gbp_uuid_get(cmd_out)
+            obj_uuid = self.get_uuid(cmd_out)
             match = re.search("\\l3_policy_id\\b\s+\| (.*) \|",cmd_out,re.I)
             l3p_uuid = match.group(1)
             return obj_uuid.rstrip(),l3p_uuid.rstrip()
          if cmd_val==1:
-           obj_uuid = self.gbp_uuid_get(cmd_out)
+           obj_uuid = self.get_uuid(cmd_out)
            return obj_uuid.rstrip()
         except Exception as e:
            exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -295,7 +296,49 @@ class Gbp_Config(object):
         if self.cmd_error_check(cmd_out) == 0:
            return 0
         if cmd_val==1:
-           obj_uuid = self.gbp_uuid_get(cmd_out)
+           obj_uuid = self.get_uuid(cmd_out)
+           return obj_uuid
+
+    def neutron_cfg(self,cmd_val,cfg_obj,name_uuid,**kwargs):
+        """
+        --cfgobj== net,subnet
+        --cmd_val== 0:delete; 1:create; 2:update
+        --name_uuid == UUID or name_string
+        Create/Update/Delete Policy Object
+        Returns assigned UUID on Create
+        kwargs addresses the need for passing required/optional params
+        """
+        cfgobj_dict={"network":"net","subnet":"subnet"}
+        if cfgobj != '':
+           if cfgobj not in cfgobj_dict:
+              raise KeyError
+        if cmd_val == '' or name_uuid == '':
+           _log.info('''Function Usage: gbp_policy_cfg_all 'rule' 0 "abc"\n
+                      --cmd_val == 0:delete; 1:create; 2:update\n
+                      -- name_uuid == UUID or name_string\n''')
+           return 0
+
+        #Build the command with mandatory params
+        if cmd_val == 0:
+           cmd = 'neutron %s-delete ' % cfgobj_dict[cfgobj]+str(name_uuid)
+        if cmd_val == 1:
+           cmd = 'neutron %s-create ' % cfgobj_dict[cfgobj]+str(name_uuid)
+        if cmd_val == 2:
+           cmd = 'neutron %s-update ' % cfgobj_dict[cfgobj]+str(name_uuid)
+        # Build the cmd string for optional/non-default args/values
+        for arg, value in kwargs.items():
+          if '_' in arg:
+             arg=string.replace(arg,'_','-')
+          cmd = cmd + " --" + "".join( '%s=%s' %(arg, value ))
+        _log.info(cmd)
+        # Execute the cmd
+        cmd_out = getoutput(cmd)
+        #_log.info(cmd_out)
+        # Catch for non-exception error strings, even though try clause succeded
+        if self.cmd_error_check(cmd_out) == 0:
+           return 0
+        if cmd_val==1:
+           obj_uuid = self.get_uuid(cmd_out)
            return obj_uuid
 
 
