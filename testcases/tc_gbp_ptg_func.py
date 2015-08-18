@@ -50,7 +50,8 @@ class test_gbp_ptg_func(object):
         self.act_name = 'test_ptg_pa'
         self.cls_name = 'test_ptg_pc'
         self.rule_name = 'test_ptg_pr'
-        self.ruleset_name = 'test_ptg_prs'
+        self.provided_ruleset_name = 'test_ptg_pprs'
+        self.consumed_ruleset_name = 'test_ptg_cprs'
         self.ptg_name = 'demo_ptg'
         self.l2p_name = 'test_ptg_l2p'
         self.l3p_name = 'test_ptg_l3p'
@@ -67,39 +68,44 @@ class test_gbp_ptg_func(object):
         self._log.info('\n## Step 1: Create a PC needed for PTG Testing ##')
         self.cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier',self.cls_name)
         if self.cls_uuid == 0:
-           self._log.info("\nReqd Policy Classifier Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n")
-           return 0
+            self._log.info("\nReqd Policy Classifier Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n")
+            return 0
         self._log.info('\n## Step 1: Create a PA needed for PTG Testing ##')
         self.act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action',self.act_name)
         if self.act_uuid == 0:
-           self._log.info("\n## Reqd Policy Action Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n")
-           return 0
+            self._log.info("\n## Reqd Policy Action Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n")
+            return 0
         self._log.info('\n## Step 1: Create a PR needed for PTG Testing ##')
         self.rule_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'rule',self.rule_name,classifier=self.cls_name,action=self.act_name)
         if self.rule_uuid == 0:
-           self._log.info("\n## Reqd Policy Rule Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n ")
-           return 0
+            self._log.info("\n## Reqd Policy Rule Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n ")
+            return 0
         self._log.info('\n## Step 1: Create a PRS needed for PTG Testing ##')
-        self.prs_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'ruleset',self.ruleset_name,policy_rules=self.rule_name)
-        if self.prs_uuid == 0:
-           self._log.info("\n## Reqd Policy Target-Group Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n ")
-           return 0
+        self.pprs_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'ruleset',self.provided_ruleset_name,policy_rules=self.rule_name)
+        if self.pprs_uuid == 0:
+            self._log.info("\n## Reqd Policy Ruleset Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n ")
+            return 0
+        self.cprs_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'ruleset',self.consumed_ruleset_name,policy_rules=self.rule_name)
+        if self.cprs_uuid == 0:
+            self._log.info("\n## Reqd Policy Ruleset Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n ")
+            return 0
+       
         l3p_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'l3p',self.l3p_name,ip_pool='20.20.0.0/24',subnet_prefix_length='28')
         if l3p_uuid == 0:
-           self._log.info("\n## Reqd L3Policy Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n")
-           return 0
+            self._log.info("\n## Reqd L3Policy Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n")
+            return 0
         l2p_uuid= self.gbpcfg.gbp_policy_cfg_all(1,'l2p',self.l2p_name,l3_policy=l3p_uuid)
 
     def cleanup(self,tc_name=''):
         if tc_name !='':
-           self._log.info('Testcase %s: FAILED' %(tc_name))
+            self._log.info('Testcase %s: FAILED' %(tc_name))
         for obj in ['target','group','l2p','l3p','ruleset','rule','classifier','action']:
             self.gbpcfg.gbp_del_all_anyobj(obj)
 
     def test_gbp_ptg_func_1(self,name_uuid='',ptg_uuid='',rep_cr=0,rep_del=0):
 
         if rep_cr==0 and rep_del==0:
-           self._log.info("\n###############################################################\n"
+            self._log.info("\n###############################################################\n"
                        "TESTCASE_GBP_PTG_FUNC_1: TO CREATE/VERIFY/DELETE/VERIFY a POLICY TARGET-GROUP with DEFAULT ATTRIB VALUE\n"
                        "TEST_STEP::\n"
                        "Create Policy Target-Group Object\n"
@@ -193,7 +199,7 @@ class test_gbp_ptg_func(object):
 
         ## Testcase work-flow starts
         self._log.info("\n## Step 1: Create Policy Target-Group with PRS ##")
-        uuids = self.gbpcfg.gbp_policy_cfg_all(1,'group',self.ptg_name,consumed_policy_rule_sets='%s=scope' %(self.ruleset_name))
+        uuids = self.gbpcfg.gbp_policy_cfg_all(1,'group',self.ptg_name,consumed_policy_rule_sets='%s=scope' %(self.consumed_ruleset_name))
         if uuids !=0:
             ptg_uuid = uuids[0].rstrip()
             l2pid = uuids[1].rstrip()
@@ -206,14 +212,14 @@ class test_gbp_ptg_func(object):
             self._log.info("\n## Step 2A: Verify Target-Group using -list option == Failed")
             return 0
         self._log.info('\n## Step 2B: Verify Policy Target-Group using -show cmd')
-        if self.gbpverify.gbp_policy_verify_all(1,'group',self.ptg_name,id=ptg_uuid,shared='False',subnets=subnetid,consumed_policy_rule_sets=self.prs_uuid) == 0:
+        if self.gbpverify.gbp_policy_verify_all(1,'group',self.ptg_name,id=ptg_uuid,shared='False',subnets=subnetid,consumed_policy_rule_sets=self.cprs_uuid) == 0:
             self._log.info("\n## Step 2B: Verify Policy Target-Group using -show option == Failed")
             return 0
         ## Update the PTG's Provided PRS
-        if self.gbpcfg.gbp_policy_cfg_all(2,'group',ptg_uuid,provided_policy_rule_sets='%s=scope' %(self.ruleset_name),name='ptg_new') == 0:
+        if self.gbpcfg.gbp_policy_cfg_all(2,'group',ptg_uuid,provided_policy_rule_sets='%s=scope' %(self.provided_ruleset_name),name='ptg_new') == 0:
            self._log.info("\n## Step 3: Updating Policy Target-Group == Failed")
            return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group','ptg_new',id=ptg_uuid,shared='False',subnets=subnetid,consumed_policy_rule_sets=self.prs_uuid,provided_policy_rule_sets=self.prs_uuid) == 0:
+        if self.gbpverify.gbp_policy_verify_all(1,'group','ptg_new',id=ptg_uuid,shared='False',subnets=subnetid,consumed_policy_rule_sets=self.cprs_uuid,provided_policy_rule_sets=self.pprs_uuid) == 0:
            self._log.info("\n## Step 3A: Verify after updating Policy Target-Group == Failed")
            return 0
         ## Create new PRS and update both Provided & Consumed PRS attrs
@@ -272,13 +278,13 @@ class test_gbp_ptg_func(object):
            self._log.info("\n## Step 3: Deletion of the neutron port corresponding to the Policy-Target = Failed")
            return 0
         self._log.info('\n## Step 4: Update the Policy-Target-Group with a PRS\n')
-        if self.gbpcfg.gbp_policy_cfg_all(2,'group',ptg_uuid,provided_policy_rule_sets='%s=scope' %(self.prs_uuid),\
-                                          consumed_policy_rule_sets='%s=scope' %(self.prs_uuid)) == 0:
+        if self.gbpcfg.gbp_policy_cfg_all(2,'group',ptg_uuid,provided_policy_rule_sets='%s=scope' %(self.pprs_uuid),\
+                                          consumed_policy_rule_sets='%s=scope' %(self.cprs_uuid)) == 0:
            self._log.info("\n## Step 4: Updating Policy Target-Group with new PRS == Failed")
            return 0
         self._log.info('\n## Step 5: Verify Policy Target-Group successfully updated\n')
         if self.gbpverify.gbp_policy_verify_all(1,'group',self.ptg_name,id=ptg_uuid,shared='False',policy_targets=pt_uuid,\
-                                                consumed_policy_rule_sets=self.prs_uuid,provided_policy_rule_sets=self.prs_uuid) == 0:
+                                                consumed_policy_rule_sets=self.cprs_uuid,provided_policy_rule_sets=self.pprs_uuid) == 0:
            self._log.info("\n## Step 5A: Verify after updating Policy Target-Group == Failed")
            return 0
         self._log.info("\n## TESTCASE_GBP_PTG_FUNC_3: PASSED")
