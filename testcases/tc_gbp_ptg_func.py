@@ -61,7 +61,7 @@ class test_gbp_ptg_func(object):
             self.cidr = '192.168.0.0/26'
         else:
             self.def_ip_pool = '10.0.0.0/8'
-            self.cidr = '10.0.0.0/26'
+            self.cidr = '10.0.0.0/24'
     
     def global_cfg(self):
         self._log.info('\n## Step 1: Create a PC needed for PTG Testing ##')

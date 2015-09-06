@@ -78,7 +78,7 @@ class test_gbp_l3p_func(object):
          if l3p_uuid == 0:
 	    self._log.info("\n## Step 1: Create L3Policy == Failed")
             return 0
-         self._log.info('# Step 2A: Verify L3Policy using -list cmd') ## default subnet= 10.0.0.0/8 & subnet_prefix_length= 26
+         self._log.info('# Step 2A: Verify L3Policy using -list cmd') ## default subnet= 10.0.0.0/8 & subnet_prefix_length= 24
          if self.gbpverify.gbp_l2l3ntk_pol_ver_all(0,'l3p',l3p_uuid,name_uuid,'10.0.0.0/8','24') == 0: 
             self._log.info("\n## Step 2A: Verify L3Policy using -list option == Failed")
             return 0
