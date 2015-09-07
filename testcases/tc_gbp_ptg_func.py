@@ -58,7 +58,7 @@ class test_gbp_ptg_func(object):
         self.env_flag = env_flag
         if self.env_flag == 'aci':
             self.def_ip_pool = '192.168.0.0/16'
-            self.cidr = '192.168.0.0/26'
+            self.cidr = '192.168.0.0/24'
         else:
             self.def_ip_pool = '10.0.0.0/8'
             self.cidr = '10.0.0.0/24'
@@ -142,7 +142,7 @@ class test_gbp_ptg_func(object):
             return 0
          rtr_uuid=self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'l3p',l3pid,ret='default',id=l3pid,\
                                                          name='default',ip_pool=self.def_ip_pool,\
-                                                         l2_policies=l2pid,subnet_prefix_length='26',\
+                                                         l2_policies=l2pid,subnet_prefix_length='24',\
                                                          ip_version='4')
          if rtr_uuid!=0 and isinstance(rtr_uuid,str) == 0:
             self._log.info("# Step 2D: Verify By-Default L3Policy == Failed")
