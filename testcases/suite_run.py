@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os,sys,optparse,platform,subprocess
 from commands import *
+from libs.config_libs import *
 
 def run_func_neg():
     # Assumption is all files are in current directory
@@ -24,6 +25,10 @@ def main():
       except Exception:
          print '%s' %(usage)
          sys.exit(1)          
+      print "\nInitiate Clean-Up Of Any Stale GBP Object Before Run of the Test Suite"
+      gbpcfg = Gbp_Config()     
+      for obj in ['group','l2p','l3p','ruleset','rule','classifier','action']:
+          gbpcfg.gbp_del_all_anyobj(obj)
       fname = run_func_neg()
       num_lines = sum(1 for line in open(fname))
       print "\nNumber of Functional Test Scripts to execute = %s" %(num_lines)

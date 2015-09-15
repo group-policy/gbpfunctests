@@ -195,7 +195,7 @@ class Gbp_Verify(object):
            cmd = 'gbp %s-show ' % verifyobj_dict[verifyobj]+str(name_uuid)
         # Execute the policy-object-verify-cmd
         cmd_out = getoutput(cmd)
-        #_log.info(cmd_out)
+        #_log.info(cmd_out) 
         # Catch for non-exception error strings
         for err in self.err_strings:
             if re.search('\\b%s\\b' %(err), cmd_out, re.I):
