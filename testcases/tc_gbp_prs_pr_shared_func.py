@@ -74,18 +74,18 @@ class test_gbp_prs_pr_shared_func(object):
         self._log.info('\n## Step 1A: Create new PA ,new PC, 4 PRs using the same PA & PC##\n')
         new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc1',shared='True')
         if new_cls_uuid == 0:
-          self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PRS_PR_SHARED_INTEG_4 ABORTED\n")
+          self._log.info("\nNew Classifier Create Failed, hence this Testcase is ABORTED\n")
           return 0
         new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa1',shared='True')
         if new_act_uuid == 0:
-          self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PRS_PR_SHARED_INTEG_4 ABORTED\n")
+          self._log.info("\nNew Action Create Failed, hence this Testcase is ABORTED\n")
           return 0
         rule_uuid_list=[]
         for i in range(4):
             new_rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr_%s' %(i),classifier=new_cls_uuid,\
                                           action=new_act_uuid,description="'For devstack demo'",shared="True")
             if new_rule_uuid == 0:
-               self._log.info("\nNew Rule Create Failed, hence TESTCASE_GBP_PRS_PR_SHARED_INTEG_4 ABORTED\n")
+               self._log.info("\nNew Rule Create Failed, hence this Testcase is ABORTED\n")
                return 0
             rule_uuid_list.append(new_rule_uuid)
         ruleset_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'ruleset','grppol_prs_many',\
@@ -132,11 +132,11 @@ class test_gbp_prs_pr_shared_func(object):
         self._log.info('\n## Step 1A: Create new PA ,new PC, 4 PRs using the same PA & PC##\n')
         new_cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier','grppol_pc1',shared='True')
         if new_cls_uuid == 0:
-          self._log.info("\nNew Classifier Create Failed, hence TESTCASE_GBP_PRS_PR_SHARED_INTEG_4 ABORTED\n")
+          self._log.info("\nNew Classifier Create Failed, hence this Testcase is ABORTED\n")
           return 0
         new_act_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'action','grppol_pa1',shared='True')
         if new_act_uuid == 0:
-          self._log.info("\nNew Action Create Failed, hence TESTCASE_GBP_PRS_PR_SHARED_INTEG_4 ABORTED\n")
+          self._log.info("\nNew Action Create Failed, hence this Testcase is ABORTED\n")
           return 0
         rule_uuid_list=[]
         shared_flag = ['True','False','True','False']
@@ -144,7 +144,7 @@ class test_gbp_prs_pr_shared_func(object):
             new_rule_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'rule','grppol_pr_%s' %(i),classifier=new_cls_uuid,\
                                           action=new_act_uuid,description="'For devstack demo'",shared=shared_flag[i])
             if new_rule_uuid == 0:
-               self._log.info("\nNew Rule Create Failed, hence TESTCASE_GBP_PRS_PR_SHARED_INTEG_4 ABORTED\n")
+               self._log.info("\nNew Rule Create Failed, hence this Testcase is ABORTED\n")
                return 0
             rule_uuid_list.append(new_rule_uuid)
         ruleset_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'ruleset','grppol_prs_many',\

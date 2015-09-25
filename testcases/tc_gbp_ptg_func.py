@@ -62,6 +62,9 @@ class test_gbp_ptg_func(object):
         else:
             self.def_ip_pool = '10.0.0.0/8'
             self.cidr = '10.0.0.0/24'
+        self._log.info("\n## DEBUG: Inside the init, delete all stale objects from previous suite_class run")
+        for obj in ['group','l2p','l3p']:
+            self.gbpcfg.gbp_del_all_anyobj(obj)
     
     def global_cfg(self):
         self._log.info('\n## Step 1: Create a PC needed for PTG Testing ##')
@@ -219,7 +222,7 @@ class test_gbp_ptg_func(object):
         ## Create new PRS and update both Provided & Consumed PRS attrs
         new_prs_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'ruleset','demo-new-prs',policy_rules=self.rule_name)
         if new_prs_uuid == 0:
-           self._log.info("\n## Step 4: Reqd Policy Target-Group Create Failed, hence TESTCASE_GBP_PTG_FUNC_2 Run ABORTED\n ")
+           self._log.info("\n## Step 4: Reqd Policy Target-Group Create Failed, hence this Testcase is ABORTED\n ")
            return 0
         if self.gbpcfg.gbp_policy_cfg_all(2,'group',ptg_uuid,provided_policy_rule_sets='demo-new-prs=scope',consumed_policy_rule_sets='demo-new-prs=scope') == 0:
            self._log.info("\n## Step 5: Updating Policy Target-Group with new PRS == Failed")

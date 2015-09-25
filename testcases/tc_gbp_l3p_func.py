@@ -191,7 +191,7 @@ class test_gbp_l3p_func(object):
         self._log.info('\n## Step 1A: Create L2Policy with default attributes##\n')
         l2p= self.gbpcfg.gbp_policy_cfg_all(1,'l2p',self.l2p_name)
         if l2p == 0:
-           self._log.info("\n## New L2Policy Create Failed, hence TESTCASE_GBP_L3P_FUNC_3 ABORTED\n")
+           self._log.info("\n## New L2Policy Create Failed, hence this Testcase is ABORTED\n")
            return 0
         elif len(l2p) < 2:
            self._log.info("\n## New L2Policy Create Failed due to unexpected tuple length\n")
@@ -261,7 +261,7 @@ class test_gbp_l3p_func(object):
             l2p_name = 'demo_l2p_%s' %(i)
             l2p= self.gbpcfg.gbp_policy_cfg_all(1,'l2p',l2p_name,l3_policy_id=l3p_uuid)
             if l2p == 0:
-                 self._log.info("\n## Step 2B:New L2Policy Create Failed, hence TESTCASE_GBP_L3P_FUNC_3 ABORTED\n")
+                 self._log.info("\n## Step 2B:New L2Policy Create Failed, hence this Testcase is ABORTED\n")
                  return 0
             elif len(l2p) < 2:
                  self._log.info("\n## Step 2C: New L2Policy Create Failed due to unexpected tuple length\n")
