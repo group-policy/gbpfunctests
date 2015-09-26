@@ -49,6 +49,9 @@ class test_gbp_l3p_func(object):
         self.gbpverify = Gbp_Verify()
         self.l3p_name = 'demo_l3p'
         self.l2p_name = 'demo_l2p'
+        self._log.info("\n## DEBUG: Inside the init, delete all stale objects from previous suite_class run")
+        for obj in ['group','l2p','l3p']:
+            self.gbpcfg.gbp_del_all_anyobj(obj)
 
     def cleanup(self,tc_name=''):
         if tc_name !='':
