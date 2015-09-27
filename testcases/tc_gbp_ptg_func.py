@@ -66,6 +66,15 @@ class test_gbp_ptg_func(object):
         for obj in ['group','l2p','l3p']:
             self.gbpcfg.gbp_del_all_anyobj(obj)
     
+    def debug(self):
+        self._log.info("\nDEBUG: Dump pre-existing PTG,L2Policy,L3Policy from the previous test-run or from Pre-cfg")
+        from commands import *
+        cmd_l3p = 'gbp l3policy-list'
+        cmd_l2p = 'gbp l2policy-list'
+        for cmd in [cmd_l2p,cmd_l3p]:
+            cmd_out = getoutput(cmd)
+            self._log.info("\nDEBUG: The dumped output: %s\n" %(cmd_out))
+
     def global_cfg(self):
         self._log.info('\n## Step 1: Create a PC needed for PTG Testing ##')
         self.cls_uuid=self.gbpcfg.gbp_policy_cfg_all(1,'classifier',self.cls_name)
@@ -91,6 +100,7 @@ class test_gbp_ptg_func(object):
         if l3p_uuid == 0:
            self._log.info("\n## Reqd L3Policy Create Failed, hence GBP Policy Target-Group Functional Test Suite Run ABORTED\n")
            return 0
+        self._log.info("\n## DEBUG: L3Policy to be used by L2Policy in PTG Pre-cfg == %s" %(l3p_uuid))
         l2p_uuid= self.gbpcfg.gbp_policy_cfg_all(1,'l2p',self.l2p_name,l3_policy=l3p_uuid)
 
     def cleanup(self,tc_name=''):
@@ -193,7 +203,9 @@ class test_gbp_ptg_func(object):
                        "Delete Policy Target-Group using Name\n"
                        "Verify that Target-Group has got deleted, show & list cmds\n"
                        "###############################################################\n")
-
+        
+        
+        self.debug() ##DEBUG
         ## Testcase work-flow starts
         self._log.info("\n## Step 1: Create Policy Target-Group with PRS ##")
         uuids = self.gbpcfg.gbp_policy_cfg_all(1,'group',self.ptg_name,consumed_policy_rule_sets='%s=scope' %(self.ruleset_name))
@@ -247,6 +259,7 @@ class test_gbp_ptg_func(object):
                          "Verify Policy Target-Group successfully updated\n"
                          "###############################################################\n")
 
+        self.debug() ##DEBUG
         ###### Testcase work-flow starts
         self._log.info('\n## Step 1: Create Policy Target-Group with L2P ##\n')
         uuids = self.gbpcfg.gbp_policy_cfg_all(1,'group',self.ptg_name,l2_policy=self.l2p_name)

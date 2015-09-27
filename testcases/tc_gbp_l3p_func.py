@@ -49,7 +49,7 @@ class test_gbp_l3p_func(object):
         self.gbpverify = Gbp_Verify()
         self.l3p_name = 'demo_l3p'
         self.l2p_name = 'demo_l2p'
-        self._log.info("\n## DEBUG: Inside the init, delete all stale objects from previous suite_class run")
+        self._log.info("\n##DEBUG: Dump & Delete inside the init")
         for obj in ['group','l2p','l3p']:
             self.gbpcfg.gbp_del_all_anyobj(obj)
 
@@ -58,6 +58,18 @@ class test_gbp_l3p_func(object):
            self._log.info('Testcase %s: FAILED' %(tc_name))
         for obj in ['group','l2p','l3p']:
             self.gbpcfg.gbp_del_all_anyobj(obj)
+
+    def debug(self):
+        self._log.info("\nDEBUG: Dump and Delete any pre-existing PTG,L2Policy,L3Policy from the previous test-run")
+        from commands import *
+        cmd_l3p = 'gbp l3policy-list'
+        cmd_l2p = 'gbp l2policy-list'
+        for cmd in [cmd_l2p,cmd_l3p]:
+            cmd_out = getoutput(cmd)
+            self._log.info("\nDEBUG: The dumped output: %s\n" %(cmd_out))
+        for obj in ['group','l2p','l3p']:
+            self.gbpcfg.gbp_del_all_anyobj(obj)
+        return 1
 
     def test_gbp_l3p_func_1(self,name_uuid='',l3p_uuid='',rep_cr=0,rep_del=0):
 
@@ -71,7 +83,7 @@ class test_gbp_l3p_func(object):
                        "Delete L3 Policy Object\n"
                        "Verify that PR and implicit neutron objects has got deleted, show & list cmds\n"
                        "###############################################################\n")
-
+        
         if name_uuid=='':
            name_uuid=self.l3p_name
         ###### Testcase work-flow starts 
@@ -133,6 +145,7 @@ class test_gbp_l3p_func(object):
                        "Verify that L3P has got deleted, show & list cmds\n"
                        "###############################################################\n")
 
+        self.debug() ## DEBUG
         ###### Testcase work-flow starts
         self._log.info("\n## Step 1: Create Policy L3Policy with non-default attrs and values ##")
         l3p_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'l3p',self.l3p_name,ip_pool='20.20.0.0/24',subnet_prefix_length='28')
@@ -184,6 +197,7 @@ class test_gbp_l3p_func(object):
                          "Verify L3/L2Policies successfully deleted\n"
                          "###############################################################\n")
 
+        self.debug() ## DEBUG
         ###### Testcase work-flow starts
         ## Create L2 L3 Policy
         self._log.info("\n## Step 1: Create L3Policy with non-default attrs and values ##")
@@ -244,6 +258,7 @@ class test_gbp_l3p_func(object):
                          "Verify L3/L2Policys successfully deleted\n"
                          "###############################################################\n")
 
+        self.debug() ## DEBUG
         ###### Testcase work-flow starts
         ## Create and Verify non-default L3 Policy
         self._log.info("\n## Step 1: Create Policy L3Policy with non-default attrs and values ")
