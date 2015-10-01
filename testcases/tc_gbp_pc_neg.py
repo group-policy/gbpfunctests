@@ -9,31 +9,34 @@ from libs.config_libs import *
 from libs.verify_libs import *
 from libs.utils_libs import *
 
+
 def main():
 
-    #Run the Testcase:
+    # Run the Testcase:
     test = test_gbp_pc_neg()
-    if test.test_gbp_pc_neg_1()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_1')
-    if test.test_gbp_pc_neg_2()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_2')
-    if test.test_gbp_pc_neg_3()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_3')
-    if test.test_gbp_pc_neg_4()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_4')
-    if test.test_gbp_pc_neg_5()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_5')
-    if test.test_gbp_pc_neg_6()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_6')
+    if test.test_gbp_pc_neg_1() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_1')
+    if test.test_gbp_pc_neg_2() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_2')
+    if test.test_gbp_pc_neg_3() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_3')
+    if test.test_gbp_pc_neg_4() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_4')
+    if test.test_gbp_pc_neg_5() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_5')
+    if test.test_gbp_pc_neg_6() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_PC_NEG_6')
     test.cleanup()
-    report_results('test_gbp_pc_neg','test_results.txt')
+    report_results('test_gbp_pc_neg', 'test_results.txt')
     sys.exit(1)
+
 
 class test_gbp_pc_neg(object):
 
     # Initialize logging
-    logging.basicConfig(format='%(asctime)s [%(levelname)s] %(name)s - %(message)s', level=logging.WARNING)
-    _log = logging.getLogger( __name__ )
+    logging.basicConfig(
+        format='%(asctime)s [%(levelname)s] %(name)s - %(message)s', level=logging.WARNING)
+    _log = logging.getLogger(__name__)
     cmd = 'rm /tmp/test_gbp_pc_neg.log'
     getoutput(cmd)
     hdlr = logging.FileHandler('/tmp/test_gbp_pc_neg.log')
@@ -43,19 +46,19 @@ class test_gbp_pc_neg(object):
     _log.setLevel(logging.INFO)
     _log.setLevel(logging.DEBUG)
 
-
     def __init__(self):
-      """
-      Init def 
-      """
-      self._log.info("\n## START OF GBP POLICY_CLASSIFIER NEGATIVE TESTSUITE\n")
-      self.gbpcfg = Gbp_Config()
-      self.gbpverify = Gbp_Verify()
-      self.cls_name = 'demo_pc'
+        """
+        Init def 
+        """
+        self._log.info(
+            "\n## START OF GBP POLICY_CLASSIFIER NEGATIVE TESTSUITE\n")
+        self.gbpcfg = Gbp_Config()
+        self.gbpverify = Gbp_Verify()
+        self.cls_name = 'demo_pc'
 
-    def cleanup(self,tc_name=''):
-        if tc_name !='':
-           self._log.info('Testcase %s FAILED' %(tc_name))
+    def cleanup(self, tc_name=''):
+        if tc_name != '':
+            self._log.info('Testcase %s FAILED' % (tc_name))
         for obj in ['classifier']:
             self.gbpcfg.gbp_del_all_anyobj(obj)
 
@@ -68,15 +71,17 @@ class test_gbp_pc_neg(object):
                        "Verify that the create fails and rollbacks\n"
                        "#######################################################\n")
 
-        ###### Testcase work-flow starts 
-	self._log.info("\n## Step 1: Create Classifier with invalid protocol##\n")
-        if self.gbpcfg.gbp_policy_cfg_all(1,'classifier',self.cls_name,protocol='http') !=0:
-	   self._log.info("\n## Step 1: Create Classifier with Invalid Protocol did NOT Fail")
-           return 0
+        # Testcase work-flow starts
+        self._log.info(
+            "\n## Step 1: Create Classifier with invalid protocol##\n")
+        if self.gbpcfg.gbp_policy_cfg_all(1, 'classifier', self.cls_name, protocol='http') != 0:
+            self._log.info(
+                "\n## Step 1: Create Classifier with Invalid Protocol did NOT Fail")
+            return 0
         self._log.info("\n## Step 1A: Verify classifier has been rolled back")
-        if self.gbpverify.gbp_classif_verify(1,self.cls_name)!=0:
-           self._log.info("\n## Step 1A: Classifier did NOT roll back")
-           return 0
+        if self.gbpverify.gbp_classif_verify(1, self.cls_name) != 0:
+            self._log.info("\n## Step 1A: Classifier did NOT roll back")
+            return 0
         self._log.info("\n## TESTCASE_GBP_PC_NEG_1: PASSED")
         return 1
 
@@ -89,15 +94,17 @@ class test_gbp_pc_neg(object):
                        "Verify that the create fails and rollbacks\n"
                        "#######################################################\n")
 
-        ###### Testcase work-flow starts
-        self._log.info("\n## Step 1: Create Classifier with invalid protocol##\n")
-        if self.gbpcfg.gbp_policy_cfg_all(1,'classifier',self.cls_name,protocol='tcp',port_range='80:50') !=0:
-           self._log.info("\n## Step 1: Create Classifier with Invalid Port-Range did NOT Fail")
-           return 0
+        # Testcase work-flow starts
+        self._log.info(
+            "\n## Step 1: Create Classifier with invalid protocol##\n")
+        if self.gbpcfg.gbp_policy_cfg_all(1, 'classifier', self.cls_name, protocol='tcp', port_range='80:50') != 0:
+            self._log.info(
+                "\n## Step 1: Create Classifier with Invalid Port-Range did NOT Fail")
+            return 0
         self._log.info("\n## Step 1A: Verify classifier has been rolled back")
-        if self.gbpverify.gbp_classif_verify(1,self.cls_name)!=0:
-           self._log.info("\n## Step 1A: Classifier did NOT roll back")
-           return 0
+        if self.gbpverify.gbp_classif_verify(1, self.cls_name) != 0:
+            self._log.info("\n## Step 1A: Classifier did NOT roll back")
+            return 0
         self._log.info("\n## TESTCASE_GBP_PC_NEG_2: PASSED")
         return 1
 
@@ -110,9 +117,10 @@ class test_gbp_pc_neg(object):
                        "#######################################################\n")
 
         self._log.info("\n## Step 1: Delete non-existent Classifier  ##")
-        if self.gbpcfg.gbp_policy_cfg_all(0,'classifier',self.cls_name) != 0:
-           self._log.info("\n## Step 1: Delete Non-existent policy classifier did NOT Fail")
-           return 0
+        if self.gbpcfg.gbp_policy_cfg_all(0, 'classifier', self.cls_name) != 0:
+            self._log.info(
+                "\n## Step 1: Delete Non-existent policy classifier did NOT Fail")
+            return 0
         self._log.info("\n## TESTCASE_GBP_PC_NEG_3: PASSED")
         return 1
 
@@ -125,15 +133,17 @@ class test_gbp_pc_neg(object):
                        "Verify that the create fails and rollbacks\n"
                        "######################################################\n")
 
-        ###### Testcase work-flow starts
-        self._log.info("\n## Step 1: Create Classifier with Invalid Direction##\n")
-        if self.gbpcfg.gbp_policy_cfg_all(1,'classifier',self.cls_name, direction='redirect')!=0:
-           self._log.info("\n## Step 1: Create Classifier with Invalid Direction did NOT Fail")
-           return 0
+        # Testcase work-flow starts
+        self._log.info(
+            "\n## Step 1: Create Classifier with Invalid Direction##\n")
+        if self.gbpcfg.gbp_policy_cfg_all(1, 'classifier', self.cls_name, direction='redirect') != 0:
+            self._log.info(
+                "\n## Step 1: Create Classifier with Invalid Direction did NOT Fail")
+            return 0
         self._log.info("\n## Step 1A: Verify classifier has been rolled back")
-        if self.gbpverify.gbp_classif_verify(1,self.cls_name)!=0:
-           self._log.info("\n## Step 1A: Classifier did NOT roll back")
-           return 0
+        if self.gbpverify.gbp_classif_verify(1, self.cls_name) != 0:
+            self._log.info("\n## Step 1A: Classifier did NOT roll back")
+            return 0
         self._log.info("\n## TESTCASE_GBP_PC_NEG_4: PASSED")
         return 1
 
@@ -147,21 +157,27 @@ class test_gbp_pc_neg(object):
                        "Verify that the update fails and rollbacks to original values\n"
                        "######################################################\n")
 
-        ###### Testcase work-flow starts
-        self._log.info("\n## Step 1: Create Classifier with non-default protocol ##\n")
-        self.cls_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'classifier',self.cls_name, protocol='tcp')
+        # Testcase work-flow starts
+        self._log.info(
+            "\n## Step 1: Create Classifier with non-default protocol ##\n")
+        self.cls_uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'classifier', self.cls_name, protocol='tcp')
         if self.cls_uuid != 0:
-            self._log.info("\n## Step 1: Create Classifier Passed, UUID == %s\n" %(self.cls_uuid))
+            self._log.info(
+                "\n## Step 1: Create Classifier Passed, UUID == %s\n" % (self.cls_uuid))
         else:
             self._log.info("\n## Step 1: Create Classifier == Failed")
             return 0
-        self._log.info("\n## Step 2: Update Policy Classifier with Invalid Protocol##\n")
-        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',self.cls_uuid,name='grppol_pc',protocol='http') != 0:
-           self._log.info("\n## Step 2: Updating Policy Classifier's with Invalid Protocol did NOT Fail ")
-           return 0
-        if self.gbpverify.gbp_classif_verify(1,self.cls_name,id=self.cls_uuid,protocol='tcp')==0:
-           self._log.info("\n## Step 2A: Verify Policy Classifier did NOT roll back")
-           return 0
+        self._log.info(
+            "\n## Step 2: Update Policy Classifier with Invalid Protocol##\n")
+        if self.gbpcfg.gbp_policy_cfg_all(2, 'classifier', self.cls_uuid, name='grppol_pc', protocol='http') != 0:
+            self._log.info(
+                "\n## Step 2: Updating Policy Classifier's with Invalid Protocol did NOT Fail ")
+            return 0
+        if self.gbpverify.gbp_classif_verify(1, self.cls_name, id=self.cls_uuid, protocol='tcp') == 0:
+            self._log.info(
+                "\n## Step 2A: Verify Policy Classifier did NOT roll back")
+            return 0
         self._log.info("\n## TESTCASE_GBP_PC_NEG_5: PASSED")
         return 1
 
@@ -174,14 +190,17 @@ class test_gbp_pc_neg(object):
                        "Verify that the update fails and rollbacks to original values\n"
                        "#####################################################\n")
 
-        ###### Testcase work-flow starts
-        self._log.info("\n## Step 2: Update Policy Classifier with Invalid Port-Range##\n")
-        if self.gbpcfg.gbp_policy_cfg_all(2,'classifier',self.cls_uuid,name='grppol_pc',port_range='4000:80') != 0:
-           self._log.info("\n## Step 2: Updating Policy Classifier's with Invalid Port-Range did NOT Fail ")
-           return 0
-        if self.gbpverify.gbp_classif_verify(1,self.cls_name,id=self.cls_uuid,protocol='tcp',port_range='4000:80')!=0:
-           self._log.info("\n## Step 2A: Verify Policy Classifier did NOT roll back")
-           return 0
+        # Testcase work-flow starts
+        self._log.info(
+            "\n## Step 2: Update Policy Classifier with Invalid Port-Range##\n")
+        if self.gbpcfg.gbp_policy_cfg_all(2, 'classifier', self.cls_uuid, name='grppol_pc', port_range='4000:80') != 0:
+            self._log.info(
+                "\n## Step 2: Updating Policy Classifier's with Invalid Port-Range did NOT Fail ")
+            return 0
+        if self.gbpverify.gbp_classif_verify(1, self.cls_name, id=self.cls_uuid, protocol='tcp', port_range='4000:80') != 0:
+            self._log.info(
+                "\n## Step 2A: Verify Policy Classifier did NOT roll back")
+            return 0
         self._log.info("\n## TESTCASE_GBP_PC_NEG_6: PASSED")
         return 1
 

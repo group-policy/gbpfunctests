@@ -10,25 +10,28 @@ from libs.config_libs import *
 from libs.verify_libs import *
 from libs.utils_libs import *
 
+
 def main():
 
-    #Run the Testcases:
+    # Run the Testcases:
     test = test_gbp_nsp_func()
-    if test.test_gbp_nsp_func_1()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_NSP_FUNC_1') 
-    if test.test_gbp_nsp_func_2()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_NSP_FUNC_2')
-    if test.test_gbp_nsp_func_3()==0:
-       test.cleanup(tc_name='TESTCASE_GBP_NSP_FUNC_3')
+    if test.test_gbp_nsp_func_1() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_NSP_FUNC_1')
+    if test.test_gbp_nsp_func_2() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_NSP_FUNC_2')
+    if test.test_gbp_nsp_func_3() == 0:
+        test.cleanup(tc_name='TESTCASE_GBP_NSP_FUNC_3')
     test.cleanup()
-    report_results('test_gbp_nsp_func','test_results.txt')
+    report_results('test_gbp_nsp_func', 'test_results.txt')
     sys.exit(1)
+
 
 class test_gbp_nsp_func(object):
 
     # Initialize logging
-    logging.basicConfig(format='%(asctime)s [%(levelname)s] %(name)s - %(message)s', level=logging.WARNING)
-    _log = logging.getLogger( __name__ )
+    logging.basicConfig(
+        format='%(asctime)s [%(levelname)s] %(name)s - %(message)s', level=logging.WARNING)
+    _log = logging.getLogger(__name__)
     cmd = 'rm /tmp/test_gbp_nsp_func.log'
     getoutput(cmd)
     hdlr = logging.FileHandler('/tmp/test_gbp_nsp_func.log')
@@ -42,15 +45,16 @@ class test_gbp_nsp_func(object):
         """
         Init def 
         """
-        self._log.info("\n## START OF GBP NETWORK_SERVICE_POLICY FUNCTIONALITY TESTSUITE\n")
+        self._log.info(
+            "\n## START OF GBP NETWORK_SERVICE_POLICY FUNCTIONALITY TESTSUITE\n")
         self.gbpcfg = Gbp_Config()
         self.gbpverify = Gbp_Verify()
         self.nsp_name = 'demo_nsp'
 
-    def cleanup(self,tc_name=''):
-        if tc_name !='':
-           self._log.info('Testcase %s: FAILED' %(tc_name))
-        for obj in ['group','nsp']:
+    def cleanup(self, tc_name=''):
+        if tc_name != '':
+            self._log.info('Testcase %s: FAILED' % (tc_name))
+        for obj in ['group', 'nsp']:
             self.gbpcfg.gbp_del_all_anyobj(obj)
 
     def test_gbp_nsp_func_1(self):
@@ -66,73 +70,93 @@ class test_gbp_nsp_func(object):
                        "Verify that NSP got deleted\n"
                        "###############################################################\n")
 
-        ###### Testcase work-flow starts 
-        ## Create and Verify NSPolicy with type=ip_single & ip-single,  name:self_subnet & self_subnet
-	self._log.info('\n## Step 1: Create NSPolicy with type=ip_single & name:self_subnet ##\n')
-        nsp1_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'nsp','demo_nsp_1',network_service_params="type=ip_single,name=vip_ip1,value=self_subnet")
+        # Testcase work-flow starts
+        # Create and Verify NSPolicy with type=ip_single & ip-single,
+        # name:self_subnet & self_subnet
+        self._log.info(
+            '\n## Step 1: Create NSPolicy with type=ip_single & name:self_subnet ##\n')
+        nsp1_uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'nsp', 'demo_nsp_1', network_service_params="type=ip_single,name=vip_ip1,value=self_subnet")
         if nsp1_uuid == 0:
-	    self._log.info("\n## Step 1A: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
+            self._log.info(
+                "\n## Step 1A: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
             return 0
-        nsp2_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'nsp','demo_nsp_2',network_service_params="type=ip_single,name=vip_ip2,value=self_subnet")
+        nsp2_uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'nsp', 'demo_nsp_2', network_service_params="type=ip_single,name=vip_ip2,value=self_subnet")
         if nsp2_uuid == 0:
-            self._log.info("\n## Step 1B: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
+            self._log.info(
+                "\n## Step 1B: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
             return 0
-        ## Verify 
-        self._log.info("\n## Step 2: Verify NSPolicies are successfully created") 
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp1_uuid,name='demo_nsp_1',\
-                                                network_service_params='{"type": "ip_single", "name": "vip_ip1", "value": "self_subnet"}')==0:
-           self._log.info("\n## Step 2A: Verify NSPolicy demo_nsp_1 with valued attributes, Failed")
-           return 0
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp2_uuid,name='demo_nsp_2',\
-                                                network_service_params='{"type": "ip_single", "name": "vip_ip2", "value": "self_subnet"}')==0:
-           self._log.info("\n## Step 2A: Verify NSPolicy demo_nsp_2 with valued attributes, Failed")
-           return 0
-        ## Create two PTGs, each referencing one of the two NSPs
-        self._log.info("\n## Step 3: Create and Verify two PTGs each referencing one of the two NSPs")    
-        uuid = self.gbpcfg.gbp_policy_cfg_all(1,'group','demo_ptg_1',network_service_policy=nsp1_uuid)
+        # Verify
+        self._log.info(
+            "\n## Step 2: Verify NSPolicies are successfully created")
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp1_uuid, name='demo_nsp_1',
+                                                  network_service_params='{"type": "ip_single", "name": "vip_ip1", "value": "self_subnet"}') == 0:
+            self._log.info(
+                "\n## Step 2A: Verify NSPolicy demo_nsp_1 with valued attributes, Failed")
+            return 0
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp2_uuid, name='demo_nsp_2',
+                                                  network_service_params='{"type": "ip_single", "name": "vip_ip2", "value": "self_subnet"}') == 0:
+            self._log.info(
+                "\n## Step 2A: Verify NSPolicy demo_nsp_2 with valued attributes, Failed")
+            return 0
+        # Create two PTGs, each referencing one of the two NSPs
+        self._log.info(
+            "\n## Step 3: Create and Verify two PTGs each referencing one of the two NSPs")
+        uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'group', 'demo_ptg_1', network_service_policy=nsp1_uuid)
         if uuid == 0:
-           self._log.info("\n## Step 3A: Create PTG using NSP demo_nsp_1,Failed")
-           return 0
+            self._log.info(
+                "\n## Step 3A: Create PTG using NSP demo_nsp_1,Failed")
+            return 0
         else:
-           ptg1_uuid = uuid[0]
-        _uuid = self.gbpcfg.gbp_policy_cfg_all(1,'group','demo_ptg_2',network_service_policy=nsp2_uuid)
+            ptg1_uuid = uuid[0]
+        _uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'group', 'demo_ptg_2', network_service_policy=nsp2_uuid)
         if _uuid == 0:
-           self._log.info("\n## Step 3B: Create PTG using NSP demo_nsp_2,Failed")
-           return 0
+            self._log.info(
+                "\n## Step 3B: Create PTG using NSP demo_nsp_2,Failed")
+            return 0
         else:
-           ptg2_uuid = _uuid[0]
-        ## Verify 
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp1_uuid,policy_target_groups=ptg1_uuid) == 0:
-           self._log.info("\n## Step 3C: Verify PTG demo_ptg_1 seen in NSP demo_nsp_1, Failed")
-           return 0
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp2_uuid,policy_target_groups=ptg2_uuid) == 0:
-           self._log.info("\n## Step 3C: Verify PTG demo_ptg_2 seen in NSP demo_nsp_2, Failed")
-           return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group',ptg1_uuid,network_service_policy_id=nsp1_uuid) == 0:
-           self._log.info("\n## Step 3D: Verify PTG demo_ptg_1 references NSP demo_nsp_1, Failed")
-           return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group',ptg2_uuid,network_service_policy_id=nsp2_uuid) == 0:
-           self._log.info("\n## Step 3D: Verify PTG demo_ptg_2 references NSP demo_nsp_2, Failed")
-           return 0
-        ## Delete PTGs & NSPs
-        self._log.info("\n## Step 4: Delete and Verify two PTGs each referencing one of the two NSPs")
-        ptg_list = [ptg1_uuid,ptg2_uuid]
-        nsp_list = [nsp1_uuid,nsp2_uuid]
+            ptg2_uuid = _uuid[0]
+        # Verify
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp1_uuid, policy_target_groups=ptg1_uuid) == 0:
+            self._log.info(
+                "\n## Step 3C: Verify PTG demo_ptg_1 seen in NSP demo_nsp_1, Failed")
+            return 0
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp2_uuid, policy_target_groups=ptg2_uuid) == 0:
+            self._log.info(
+                "\n## Step 3C: Verify PTG demo_ptg_2 seen in NSP demo_nsp_2, Failed")
+            return 0
+        if self.gbpverify.gbp_policy_verify_all(1, 'group', ptg1_uuid, network_service_policy_id=nsp1_uuid) == 0:
+            self._log.info(
+                "\n## Step 3D: Verify PTG demo_ptg_1 references NSP demo_nsp_1, Failed")
+            return 0
+        if self.gbpverify.gbp_policy_verify_all(1, 'group', ptg2_uuid, network_service_policy_id=nsp2_uuid) == 0:
+            self._log.info(
+                "\n## Step 3D: Verify PTG demo_ptg_2 references NSP demo_nsp_2, Failed")
+            return 0
+        # Delete PTGs & NSPs
+        self._log.info(
+            "\n## Step 4: Delete and Verify two PTGs each referencing one of the two NSPs")
+        ptg_list = [ptg1_uuid, ptg2_uuid]
+        nsp_list = [nsp1_uuid, nsp2_uuid]
         for i in range(len(ptg_list)):
-            if self.gbpcfg.gbp_policy_cfg_all(0,'group',ptg_list[i]) == 0:
-               self._log.info("\n## Step 4A: Deletion of PTG %s, Failed" %(ptg_list[i]))
-               return 0
-            if self.gbpcfg.gbp_policy_cfg_all(0,'nsp',nsp_list[i]) == 0:
-               self._log.info("\n## Step 4B: Deletion of NSP %s, Failed" %(nsp_list[i]))
-               return 0
-        ##Verify
+            if self.gbpcfg.gbp_policy_cfg_all(0, 'group', ptg_list[i]) == 0:
+                self._log.info(
+                    "\n## Step 4A: Deletion of PTG %s, Failed" % (ptg_list[i]))
+                return 0
+            if self.gbpcfg.gbp_policy_cfg_all(0, 'nsp', nsp_list[i]) == 0:
+                self._log.info(
+                    "\n## Step 4B: Deletion of NSP %s, Failed" % (nsp_list[i]))
+                return 0
+        # Verify
         for n in range(len(nsp_list)):
-            if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp_list[n]) != 0:
-               self._log.info("\n## Step 4C: Verify deletion of NSP, Failed")
-               return 0
+            if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp_list[n]) != 0:
+                self._log.info("\n## Step 4C: Verify deletion of NSP, Failed")
+                return 0
         self._log.info("\n## TESTCASE_GBP_NSP_FUNC_1: PASSED")
-        return 1 
-
+        return 1
 
     def test_gbp_nsp_func_2(self):
 
@@ -149,77 +173,98 @@ class test_gbp_nsp_func(object):
                        "Verify that PTG and NSPs got deleted\n"
                        "###############################################################\n")
 
-        ###### Testcase work-flow starts
-        ## Create NSPolicy with non-default attrs
+        # Testcase work-flow starts
+        # Create NSPolicy with non-default attrs
         self._log.info('\n## Step 1: Create two NSPolicy ##\n')
-        nsp1_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'nsp','demo_nsp_1',network_service_params="type=ip_single,name=vip_ip1,value=self_subnet")
+        nsp1_uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'nsp', 'demo_nsp_1', network_service_params="type=ip_single,name=vip_ip1,value=self_subnet")
         if nsp1_uuid == 0:
-            self._log.info("\n## Step 1A: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
+            self._log.info(
+                "\n## Step 1A: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
             return 0
-        nsp2_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'nsp','demo_nsp_2',network_service_params="type=ip_single,name=vip_ip2,value=self_subnet")
+        nsp2_uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'nsp', 'demo_nsp_2', network_service_params="type=ip_single,name=vip_ip2,value=self_subnet")
         if nsp2_uuid == 0:
-            self._log.info("\n## Step 1B: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
+            self._log.info(
+                "\n## Step 1B: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
             return 0
-        ## Create PTG, referencing one of the two NSPs
-        self._log.info("\n## Step 3: Create and Verify PTG referencing one of the two NSPs")
-        uuid = self.gbpcfg.gbp_policy_cfg_all(1,'group','demo_ptg_1',network_service_policy=nsp1_uuid)
+        # Create PTG, referencing one of the two NSPs
+        self._log.info(
+            "\n## Step 3: Create and Verify PTG referencing one of the two NSPs")
+        uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'group', 'demo_ptg_1', network_service_policy=nsp1_uuid)
         if uuid == 0:
-           self._log.info("\n## Step 3A: Create PTG using NSP demo_nsp_1,Failed")
-           return 0
+            self._log.info(
+                "\n## Step 3A: Create PTG using NSP demo_nsp_1,Failed")
+            return 0
         else:
-           ptg1_uuid = uuid[0]
-        ## Verify
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp1_uuid,policy_target_groups=ptg1_uuid) == 0:
-           self._log.info("\n## Step 3B: Verify PTG demo_ptg_1 seen in NSP demo_nsp_1, Failed")
-           return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group',ptg1_uuid,network_service_policy_id=nsp1_uuid) == 0:
-           self._log.info("\n## Step 3C: Verify PTG demo_ptg_1 references NSP demo_nsp_1, Failed")
-           return 0
-        self._log.info("\n## Step 4: Update and Verify the PTG with the second NSP")
-        ## Update the PTG with second NSP and Verify
-        if self.gbpcfg.gbp_policy_cfg_all(2,'group',ptg1_uuid,network_service_policy=nsp2_uuid) == 0:
-           self._log.info("\n## Step 4A: Updating NSP attribute of PTG, Failed")
-           return 0
-        ## Verify
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp1_uuid,policy_target_groups=ptg1_uuid) != 0:
-           self._log.info("\n## Step 4B: Verify PTG demo_ptg_1 is NOT seen in NSP demo_nsp_1, Failed")
-           return 0
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp2_uuid,policy_target_groups=ptg1_uuid) == 0:
-           self._log.info("\n## Step 4C: Verify PTG demo_ptg_1 is seen in NSP demo_nsp_2, Failed")
-           return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group',ptg1_uuid,network_service_policy_id=nsp2_uuid) == 0:
-           self._log.info("\n## Step 4D: Verify PTG demo_ptg_1 references NSP demo_nsp_2, Failed")
-           return 0
-        self._log.info("\n## Step 5: Update/Revert the NSP attr of PTG and Verify")
-        ## Update the PTG by reverting the NSP to its initial one
-        if self.gbpcfg.gbp_policy_cfg_all(2,'group',ptg1_uuid,network_service_policy=nsp1_uuid) == 0:
-           self._log.info("\n## Step 5A: Reverting the NSP attribute of PTG by update action, Failed")
-           return 0
-        ## Verify
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp2_uuid,policy_target_groups=ptg1_uuid) != 0:
-           self._log.info("\n## Step 5B: Verify PTG demo_ptg_1 is NOT seen in NSP demo_nsp_2, Failed")
-           return 0
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp1_uuid,policy_target_groups=ptg1_uuid) == 0:
-           self._log.info("\n## Step 5C: Verify PTG demo_ptg_1 is seen in NSP demo_nsp_1, Failed")
-           return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group',ptg1_uuid,network_service_policy_id=nsp1_uuid) == 0:
-           self._log.info("\n## Step 5D: Verify PTG demo_ptg_1 references NSP demo_nsp_1, Failed")
-           return 0
-        self._log.info("\n## Step 6: Delete and Verify two PTGs each referencing one of the two NSPs")
-        ## Delete PTG & NSP
-        if self.gbpcfg.gbp_policy_cfg_all(0,'group',ptg1_uuid) == 0:
-           self._log.info("\n## Step 6A: Deletion of PTG,Failed")
-           return 0
-        nsp_list = [nsp1_uuid,nsp2_uuid]
+            ptg1_uuid = uuid[0]
+        # Verify
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp1_uuid, policy_target_groups=ptg1_uuid) == 0:
+            self._log.info(
+                "\n## Step 3B: Verify PTG demo_ptg_1 seen in NSP demo_nsp_1, Failed")
+            return 0
+        if self.gbpverify.gbp_policy_verify_all(1, 'group', ptg1_uuid, network_service_policy_id=nsp1_uuid) == 0:
+            self._log.info(
+                "\n## Step 3C: Verify PTG demo_ptg_1 references NSP demo_nsp_1, Failed")
+            return 0
+        self._log.info(
+            "\n## Step 4: Update and Verify the PTG with the second NSP")
+        # Update the PTG with second NSP and Verify
+        if self.gbpcfg.gbp_policy_cfg_all(2, 'group', ptg1_uuid, network_service_policy=nsp2_uuid) == 0:
+            self._log.info(
+                "\n## Step 4A: Updating NSP attribute of PTG, Failed")
+            return 0
+        # Verify
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp1_uuid, policy_target_groups=ptg1_uuid) != 0:
+            self._log.info(
+                "\n## Step 4B: Verify PTG demo_ptg_1 is NOT seen in NSP demo_nsp_1, Failed")
+            return 0
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp2_uuid, policy_target_groups=ptg1_uuid) == 0:
+            self._log.info(
+                "\n## Step 4C: Verify PTG demo_ptg_1 is seen in NSP demo_nsp_2, Failed")
+            return 0
+        if self.gbpverify.gbp_policy_verify_all(1, 'group', ptg1_uuid, network_service_policy_id=nsp2_uuid) == 0:
+            self._log.info(
+                "\n## Step 4D: Verify PTG demo_ptg_1 references NSP demo_nsp_2, Failed")
+            return 0
+        self._log.info(
+            "\n## Step 5: Update/Revert the NSP attr of PTG and Verify")
+        # Update the PTG by reverting the NSP to its initial one
+        if self.gbpcfg.gbp_policy_cfg_all(2, 'group', ptg1_uuid, network_service_policy=nsp1_uuid) == 0:
+            self._log.info(
+                "\n## Step 5A: Reverting the NSP attribute of PTG by update action, Failed")
+            return 0
+        # Verify
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp2_uuid, policy_target_groups=ptg1_uuid) != 0:
+            self._log.info(
+                "\n## Step 5B: Verify PTG demo_ptg_1 is NOT seen in NSP demo_nsp_2, Failed")
+            return 0
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp1_uuid, policy_target_groups=ptg1_uuid) == 0:
+            self._log.info(
+                "\n## Step 5C: Verify PTG demo_ptg_1 is seen in NSP demo_nsp_1, Failed")
+            return 0
+        if self.gbpverify.gbp_policy_verify_all(1, 'group', ptg1_uuid, network_service_policy_id=nsp1_uuid) == 0:
+            self._log.info(
+                "\n## Step 5D: Verify PTG demo_ptg_1 references NSP demo_nsp_1, Failed")
+            return 0
+        self._log.info(
+            "\n## Step 6: Delete and Verify two PTGs each referencing one of the two NSPs")
+        # Delete PTG & NSP
+        if self.gbpcfg.gbp_policy_cfg_all(0, 'group', ptg1_uuid) == 0:
+            self._log.info("\n## Step 6A: Deletion of PTG,Failed")
+            return 0
+        nsp_list = [nsp1_uuid, nsp2_uuid]
         for i in range(len(nsp_list)):
-            if self.gbpcfg.gbp_policy_cfg_all(0,'nsp',nsp_list[i]) == 0:
-               self._log.info("\n## Step 6B: Deletion of NSP %s, Failed" %(nsp_list[i]))
-               return 0
-        ##Verify
+            if self.gbpcfg.gbp_policy_cfg_all(0, 'nsp', nsp_list[i]) == 0:
+                self._log.info(
+                    "\n## Step 6B: Deletion of NSP %s, Failed" % (nsp_list[i]))
+                return 0
+        # Verify
         for n in range(len(nsp_list)):
-            if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp_list[n]) != 0:
-               self._log.info("\n## Step 6C: Verify deletion of NSP, Failed")
-               return 0
+            if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp_list[n]) != 0:
+                self._log.info("\n## Step 6C: Verify deletion of NSP, Failed")
+                return 0
         self._log.info("\n## TESTCASE_GBP_NSP_FUNC_2: PASSED")
         return 1
 
@@ -235,48 +280,57 @@ class test_gbp_nsp_func(object):
                        "Delete PTG & NSP, Verify that PTG and NSPs got deleted\n"
                        "###############################################################\n")
 
-        ###### Testcase work-flow starts
-        ## Create NSPolicy with non-default attrs
-        self._log.info('\n## Step 1: Create NSPolicy with non-default params ##\n')
-        nsp1_uuid = self.gbpcfg.gbp_policy_cfg_all(1,'nsp','demo_nsp_1',network_service_params="type=ip_single,name=vip_ip1,value=self_subnet")
+        # Testcase work-flow starts
+        # Create NSPolicy with non-default attrs
+        self._log.info(
+            '\n## Step 1: Create NSPolicy with non-default params ##\n')
+        nsp1_uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'nsp', 'demo_nsp_1', network_service_params="type=ip_single,name=vip_ip1,value=self_subnet")
         if nsp1_uuid == 0:
-            self._log.info("\n## Step 1A: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
+            self._log.info(
+                "\n## Step 1A: Create NSPolicy with type=ip_single & name:self_subnet == Failed")
             return 0
-        ## Create PTG, referencing one of the two NSPs
-        self._log.info("\n## Step 2: Create and Verify PTG referencing the NSP")
-        uuid = self.gbpcfg.gbp_policy_cfg_all(1,'group','demo_ptg_1',network_service_policy=nsp1_uuid)
+        # Create PTG, referencing one of the two NSPs
+        self._log.info(
+            "\n## Step 2: Create and Verify PTG referencing the NSP")
+        uuid = self.gbpcfg.gbp_policy_cfg_all(
+            1, 'group', 'demo_ptg_1', network_service_policy=nsp1_uuid)
         if uuid == 0:
-           self._log.info("\n## Step 2A: Create PTG using NSP demo_nsp_1,Failed")
-           return 0
+            self._log.info(
+                "\n## Step 2A: Create PTG using NSP demo_nsp_1,Failed")
+            return 0
         else:
-           ptg1_uuid = uuid[0]
-        ## Verify
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp1_uuid,policy_target_groups=ptg1_uuid) == 0:
-           self._log.info("\n## Step 2B: Verify PTG demo_ptg_1 seen in NSP demo_nsp_1, Failed")
-           return 0
-        if self.gbpverify.gbp_policy_verify_all(1,'group',ptg1_uuid,network_service_policy_id=nsp1_uuid) == 0:
-           self._log.info("\n## Step 2C: Verify PTG demo_ptg_1 references NSP demo_nsp_1, Failed")
-           return 0
-        ## Delete the referenced NSP
-        self._log.info("\n## Step 3: Delete the NSP while it is still referenced in a PTG")
-        if self.gbpcfg.gbp_policy_cfg_all(0,'nsp',nsp1_uuid) != 0:
-           self._log.info("\n## Step 3A: Deletion of Referenced NSP DID NOT fail")
-           return 0
-        ## Delete PTG & NSP
+            ptg1_uuid = uuid[0]
+        # Verify
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp1_uuid, policy_target_groups=ptg1_uuid) == 0:
+            self._log.info(
+                "\n## Step 2B: Verify PTG demo_ptg_1 seen in NSP demo_nsp_1, Failed")
+            return 0
+        if self.gbpverify.gbp_policy_verify_all(1, 'group', ptg1_uuid, network_service_policy_id=nsp1_uuid) == 0:
+            self._log.info(
+                "\n## Step 2C: Verify PTG demo_ptg_1 references NSP demo_nsp_1, Failed")
+            return 0
+        # Delete the referenced NSP
+        self._log.info(
+            "\n## Step 3: Delete the NSP while it is still referenced in a PTG")
+        if self.gbpcfg.gbp_policy_cfg_all(0, 'nsp', nsp1_uuid) != 0:
+            self._log.info(
+                "\n## Step 3A: Deletion of Referenced NSP DID NOT fail")
+            return 0
+        # Delete PTG & NSP
         self._log.info("\n## Step 4: Delete PTG followed by NSP and Verify")
-        if self.gbpcfg.gbp_policy_cfg_all(0,'group',ptg1_uuid) == 0:
-           self._log.info("\n## Step 4A: Deletion of PTG,Failed")
-           return 0
-        if self.gbpcfg.gbp_policy_cfg_all(0,'nsp',nsp1_uuid) == 0:
-           self._log.info("\n## Step 4B: Deletion of NSP,Failed")
-           return 0
-        ##Verify
-        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1,'nsp',nsp1_uuid) != 0:
-           self._log.info("\n## Step 4C: Verify deletion of NSP, Failed")
-           return 0
+        if self.gbpcfg.gbp_policy_cfg_all(0, 'group', ptg1_uuid) == 0:
+            self._log.info("\n## Step 4A: Deletion of PTG,Failed")
+            return 0
+        if self.gbpcfg.gbp_policy_cfg_all(0, 'nsp', nsp1_uuid) == 0:
+            self._log.info("\n## Step 4B: Deletion of NSP,Failed")
+            return 0
+        # Verify
+        if self.gbpverify.gbp_l2l3ntk_pol_ver_all(1, 'nsp', nsp1_uuid) != 0:
+            self._log.info("\n## Step 4C: Verify deletion of NSP, Failed")
+            return 0
         self._log.info("\n## TESTCASE_GBP_NSP_FUNC_3: PASSED")
         return 1
 
 if __name__ == '__main__':
     main()
-
